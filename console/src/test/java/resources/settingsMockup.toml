@@ -1,0 +1,38 @@
+#This is a TOML document
+
+#This example is an imaginary playground mockup with two categories, each with two playgrounds.
+# playground
+#   -unsorted
+#       -io
+#       -input
+#   -shapes
+#       -blueCircle
+#       -redSquare
+
+title = "Settings Example"
+
+[defaults]
+type = "libgdx-integrated"
+
+[unsorted.settings]
+    singleShot = true
+    createReadme = false
+    createGradleBuildFile = false
+    createLaunchers = false
+
+[unsorted.io]
+    path = "src/io"
+    type = "java"
+
+[unsorted.input]
+    path = "src/input"
+    type = "java"
+
+[shapes.blueCircle]
+    path = "src/blueCircle"
+    type = "libgdx"
+
+[shapes.redSquare]
+    path = "src/redSquare"
+    type = "libgdx"
+

@@ -1,0 +1,11 @@
+title = "Hello TOML"
+
+age = 28
+
+[someTable]
+name = "John"
+
+[[fruit]]
+hello = "world"
+[fruit.apple]
+color = "red"

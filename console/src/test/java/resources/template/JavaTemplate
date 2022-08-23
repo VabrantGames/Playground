@@ -1,0 +1,9 @@
+package %package%;
+
+public class %CLASS_NAME% extends ApplicationAdapter {
+
+    @Override
+    public void create() {
+        System.out.println("Hello World");
+    }
+}
