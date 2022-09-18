@@ -1,0 +1,26 @@
+package ${package};
+
+public class ${JavaClassname} implements ApplicationListener {
+
+
+}
+
+======================================================================
+//For project lwjgl3 launchers
+
+//Options
+projectName = ${PROJECT_NAME}
+package = ${package}
+======================================================================
+
+package ${package}.launchers.lwjgl3;
+
+import ${package}.${PROJECT_NAME};
+
+public class ${PROJECT_NAME}Lwjgl3Launcher {
+    public static void main(String[] args) {
+        Lwjgl3Config config...
+        new LwjglApp(${PROJECT_NAME}(), config());
+    }
+
+}

@@ -1,0 +1,61 @@
+#This is a TOML document
+
+#This example is an imaginary setup mockup with two categories, each with two playgrounds.
+# setup
+#   -unsorted
+#       -io
+#       -input
+#   -shapes
+#       -blueCircle
+#       -redSquare
+
+title = "Settings Example"
+isIntegrated = true
+rootAssets = ""
+
+#[defaults]
+#type = "libgdx-integrated"
+
+[playgrounds.testplayground.shapedrawercircle]
+    name = "shapedrawercircle"
+    launchers = ["lwjgl3", "lwjgl2"]
+    isLibgdxCompatible = true
+
+[playgrounds.testplayground.javaproject]
+    name = "javaproject"
+    launchers = []
+    isLibgdxCompatible = false
+
+[[playground.testplayground.shapedrawercircle]]
+    name = "shapedrawercircle"
+    launcheers = ["lwjgl3", "lwjgl2"]
+    isLibgdxCompatible = true
+
+[[playground.testplayround.javaproject]]
+    name = "javaproject"
+    launcheers = []
+    isLibgdxCompatible = false
+
+
+[unsorted.settings]
+    singleShot = true
+    createReadme = false
+    createGradleBuildFile = false
+    createLaunchers = false
+
+[unsorted.io]
+    path = "src/io"
+    type = "java"
+
+[unsorted.input]
+    path = "src/input"
+    type = "java"
+
+[shapes.blueCircle]
+    path = "src/blueCircle"
+    type = "libgdx"
+
+[shapes.redSquare]
+    path = "src/redSquare"
+    type = "libgdx"
+

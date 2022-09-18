@@ -1,0 +1,36 @@
+buildscript {
+    repositories {
+        mavenCentral()
+		maven { url 'https://s01.oss.sonatype.org' }
+		mavenLocal()
+		google()
+		gradlePluginPortal()
+		maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+		maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
+    }
+    dependencies {
+    }
+}
+
+allprojects {
+    apply plugin: "eclipse"
+    apply plugin: "idea"
+
+    group = com.setup.%PLAYGROUND_NAME%
+
+    repositories {
+       mavenCentral()
+            maven { url 'https://s01.oss.sonatype.org' }
+       		mavenLocal()
+       		gradlePluginPortal()
+       		maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+       		maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
+       		maven { url 'https://jitpack.io' }
+    }
+}
+
+tasks.eclipse.doLast {
+    delete ".project"
+    delete ".classpath"
+    delete ".settings/"
+}
