@@ -1,31 +1,60 @@
 package com.vabrant.playground;
 
-import picocli.CommandLine;
+import com.moandjiezana.toml.Toml;
 
 import java.io.File;
-import java.util.concurrent.Callable;
+import java.util.Map;
 
-import static com.vabrant.playground.Setup.DIRECTORIES;
+public class Playground {
 
-@CommandLine.Command(
-        name = "playground",
-        description = "Initial a playground.",
-        mixinStandardHelpOptions = true
-)
-public class Playground implements Callable<Integer> {
+    private String name;
+    private String nameLowerCase;
+    private String group;
+    private File playgroundDirectory;
+    private File projectsDirectory;
+    private File settingsFile;
+    private Toml settings;
 
-    @CommandLine.Mixin
-    private Setup.ShareableOptions options;
+    Playground(File rootDirectory) {
+        playgroundDirectory = new File(rootDirectory, "playground");
+        projectsDirectory = new File(playgroundDirectory, "projects");
+    }
 
-    @Override
-    public Integer call() throws Exception {
-        final String playgroundDirectory = "playground";
+    public void setup(PlaygroundCommandData data) {
+        name = data.getName();
+        nameLowerCase = name.toLowerCase();
+        group = data.getGroup();
+    }
 
-        File f = new File(options.playgroundPath);
+    public void setup(Settings settings) {
 
+    }
 
-//        DIRECTORIES.put(playgroundDirectory, new File(options.))
+    public String getName() {
+        return name;
+    }
 
-        return 0;
+    public String getNameLowerCase() {
+        return nameLowerCase;
+    }
+
+    public String getGroup() {
+        return group;
+    }
+
+    public File getPlaygroundDirectory() {
+        return playgroundDirectory;
+    }
+
+    public File getProjectsDirectory() {
+        return projectsDirectory;
+    }
+
+    public File getSettingsFile() {
+        return settingsFile;
+    }
+
+    public Toml getSettings() {
+        return settings;
     }
 }

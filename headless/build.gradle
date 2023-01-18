@@ -1,4 +1,4 @@
-//apply plugin: "java-library"
+apply plugin: "java-library"
 apply plugin: 'application'
 apply plugin: "maven-publish"
 
@@ -6,13 +6,17 @@ apply plugin: "maven-publish"
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 //eclipse.project.name = appName + '-console'
 
+mainClassName = "com.vabrant.playground.Headless"
 sourceCompatibility = 11;
 targetCompatibility = 11;
-version = "$consoleVersion"
+//version = "$consoleVersion"
+
 
 dependencies {
     implementation "info.picocli:picocli:4.6.3"
     implementation "com.moandjiezana.toml:toml4j:0.7.2"
+    implementation "org.tomlj:tomlj:1.1.0"
+    implementation "org.apache.commons:commons-lang3:3.12.0"
     testImplementation(platform('org.junit:junit-bom:5.8.2'))
     testImplementation('org.junit.jupiter:junit-jupiter')
     testImplementation "com.badlogicgames.gdx:gdx:$gdxVersion"
@@ -21,6 +25,7 @@ dependencies {
     testImplementation "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
     testImplementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
 }
+
 
 afterEvaluate {
     java {
@@ -37,6 +42,19 @@ afterEvaluate {
                 from components.java
             }
         }
+    }
+}
+
+jar {
+    archiveFileName = "playground-setup.jar"
+    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+    dependsOn configurations.runtimeClasspath
+    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+    manifest {
+        attributes 'Main-Class': project.mainClassName
+    }
+    doLast {
+        file(archiveFile).setExecutable(true, false);
     }
 }
 

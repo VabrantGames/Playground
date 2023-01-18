@@ -13,12 +13,12 @@ allprojects {
     apply plugin: "eclipse"
     apply plugin: "idea"
 
-//    group = "com.github.VabrantGames"
     group = "com.vabrantgames.playground"
 
     repositories {
-        mavenLocal()
         mavenCentral()
+        maven { url 'https://s01.oss.sonatype.org' }
+        mavenLocal()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
         maven { url "https://jitpack.io" }

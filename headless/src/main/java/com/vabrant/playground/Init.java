@@ -10,7 +10,7 @@ import static com.vabrant.playground.Setup.*;
 
 @CommandLine.Command(
         name = "init",
-        description = "Initialize a standalone or libGDX integrated playground project.",
+        description = "Initialize a standalone or gradle integrated project.",
         mixinStandardHelpOptions = true
 )
 public class Init implements Callable<Integer> {
@@ -49,7 +49,7 @@ public class Init implements Callable<Integer> {
 
                 for (File f : files) {
                     String name = f.getName();
-                    if (name.equals("core") || name.equals("settings.gradle")) {
+                    if (name.equals("core") || name.equals("setup/playground/settings.gradle")) {
                         found++;
                     }
                 }
@@ -58,7 +58,7 @@ public class Init implements Callable<Integer> {
                     throw new RuntimeException("Not a compatible libGDX project. Missing core folder and settings.gradle file.");
                 }
 
-                path = new File(DIRECTORIES.get(rootDirectory), "playground");
+                path = new File(DIRECTORIES.get(rootDirectory), "setup/playground");
                 DIRECTORIES.replace(rootDirectory, path);
                 commandQueue.add(new CreateDirectoryCommand(path));
             } else {
@@ -71,7 +71,7 @@ public class Init implements Callable<Integer> {
             commandQueue
                     .add(new CreateDirectoryCommand(new File(getDirectoryFile(rootDirectory), "assets")))
                     .add(new CreateDirectoryCommand(new File(getDirectoryFile(rootDirectory), "playgrounds")))
-                    .setTempFile(getResource("/playground").toFile())
+                    .setTempFile(getResource("/setup/playground").toFile())
                     .add(new CopyFileCommand(new File(commandQueue.getTempFile(), "gitignore"), new File(DIRECTORIES.get(rootDirectory), ".gitignore"))
                             .options(f -> f.setExecutable(true)))
                     .add(new CopyFileCommand(new File(commandQueue.getTempFile(), "gradlew"), new File(DIRECTORIES.get(rootDirectory), "gradlew"))
@@ -79,15 +79,16 @@ public class Init implements Callable<Integer> {
                     .add(new CopyFileCommand(new File(commandQueue.getTempFile(), "gradlew.bat"), new File(DIRECTORIES.get(rootDirectory), "gradlew.bat")))
                     .add(new CreateDirectoryCommand(new File(DIRECTORIES.get(rootDirectory), "gradle/wrapper"))
                             .options(d -> DIRECTORIES.put(gradleWrapperDirectory, d)))
-                    .setTempFile(getResource("/playground/gradle/wrapper").toFile())
+                    .setTempFile(getResource("/setup/playground/gradle/wrapper").toFile())
                     .add(new CopyFileCommand(new File(commandQueue.getTempFile(), "gradle-wrapper.jar"), new File(DIRECTORIES.get(gradleWrapperDirectory), "gradle-wrapper.jar")))
                     .add(new CopyFileCommand(new File(commandQueue.getTempFile(), "gradle-wrapper.properties"), new File(DIRECTORIES.get(gradleWrapperDirectory), "gradle-wrapper.properties")))
                     .add(new MacroCommand()
-                            .add(new CopyAndReplaceCommand(getResource("/templates/gradle/RootBuildGradle.txt").toFile(), Setup.createMap(m -> {
-                                m.put(Setup.PROJECT_NAME, options.name);
+                            .add(new ReadAsStringCommand(getResource("/setup/gradle/RootBuildGradle.txt").toFile()))
+                            .add(new ReplaceCommand(Setup.createMap(m -> {
+                                m.put(Setup.PLAYGROUND_PROJECT_NAME, options.name);
                             })))
-                            .add(new CreateFileCommand(new File(DIRECTORIES.get(rootDirectory), "build.gradle"))))
-                    .add(new CreateGradlePropertiesCommand(new File(DIRECTORIES.get(rootDirectory), "gradle.properties"))
+                            .add(new WriteToFileCommand(new File(getDirectoryFile(rootDirectory), "build.gradle"))))
+                    .add(new CreateGradlePropertiesCommand(new File(DIRECTORIES.get(rootDirectory), "setup/playground/gradle.properties"))
                             .addProperty("org.gradle.daemon", "true")
                             .addProperty("org.gradle.jvmargs", "-Xms512M -Xmx1G -XX:MaxMetaspaceSize=1G")
                             .addProperty("org.gradle.configureondemand", "false")
@@ -97,8 +98,9 @@ public class Init implements Callable<Integer> {
                                     .append("rootProject.name=\"")
                                     .append(options.name)
                                     .append("\"").newLine())
-                            .add(new CreateFileCommand(new File(DIRECTORIES.get(rootDirectory), "settings.gradle"))));
-//                    .add(new CreateFileCommand);
+                            .add(new WriteToFileCommand(new File(getDirectoryFile(rootDirectory), "setup/playground/settings.gradle"))))
+//                            .add(new CreateFileCommand(new File(DIRECTORIES.get(rootDirectory), "settings.gradle"))))
+                    .add(new WriteToFileCommand(new File(getDirectoryFile(rootDirectory), "settings.toml")));
             commandQueue.execute();
 
 //            File dir = DIRECTORIES.get(rootDirectory);

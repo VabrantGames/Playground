@@ -1,22 +1,17 @@
 package com.vabrant.playground.commands;
 
-import com.vabrant.playground.Setup;
-
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.function.Consumer;
 
 public class CopyFileCommand implements Command<File, Object> {
 
-    private final File srcFile;
-    private final File destFile;
     private Consumer<File> options;
+    private final MacroCommand<File, Object> macroCommand;
 
     public CopyFileCommand(File srcFile, File destFile) throws Exception {
-        this.srcFile = srcFile;
-        this.destFile = destFile;
-
-        //TODO Add description
-        if (!srcFile.exists()) throw new RuntimeException("");
+//        if (!srcFile.exists()) throw new FileNotFoundException("File at " + srcFile.getAbsolutePath() + " not found.");
+        macroCommand = new MacroCommand<>(new ReadAsBytesCommand(srcFile), new WriteToFileCommand(destFile));
     }
 
     /**
@@ -31,8 +26,8 @@ public class CopyFileCommand implements Command<File, Object> {
 
     @Override
     public File execute() throws Exception {
-        Setup.copy(srcFile, destFile);
-        if (options != null) options.accept(destFile);
-        return destFile;
+        File file = macroCommand.execute();
+        if (options != null) options.accept(file);
+        return file;
     }
 }

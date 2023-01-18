@@ -3,7 +3,6 @@ package com.vabrant.playground.commands;
 public class CreateReadmeCommand implements Command {
 
     private WriteToStringCommand wtsc;
-    public CreateFileCommand cfc;
 
     public CreateReadmeCommand(String name) {
         wtsc = new WriteToStringCommand();

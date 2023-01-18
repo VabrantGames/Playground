@@ -8,7 +8,7 @@ public class CreateDirectoryCommand implements Command<Path, Object> {
 
     private final File directory;
 
-    public CreateDirectoryCommand(File directory) throws Exception {
+    public CreateDirectoryCommand(File directory) {
         if (directory == null) throw new IllegalArgumentException("Path is null");
         this.directory = directory;
     }

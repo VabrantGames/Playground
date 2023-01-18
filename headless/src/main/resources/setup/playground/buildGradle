@@ -16,16 +16,17 @@ allprojects {
     apply plugin: "eclipse"
     apply plugin: "idea"
 
-    group = com.setup.%PLAYGROUND_NAME%
+    ext.appName = '${PLAYGROUND_NAME}-Playground'
+    group = '${GROUP}'
 
     repositories {
-       mavenCentral()
-            maven { url 'https://s01.oss.sonatype.org' }
-       		mavenLocal()
-       		gradlePluginPortal()
-       		maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-       		maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
-       		maven { url 'https://jitpack.io' }
+        mavenCentral()
+        maven { url 'https://s01.oss.sonatype.org' }
+        mavenLocal()
+        gradlePluginPortal()
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+        maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
+        maven { url 'https://jitpack.io' }
     }
 }
 
@@ -34,3 +35,5 @@ tasks.eclipse.doLast {
     delete ".classpath"
     delete ".settings/"
 }
+
+eclipse.project.name = '${PLAYGROUND_NAME}-Playground' + '-parent'

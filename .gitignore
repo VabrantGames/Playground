@@ -17,7 +17,10 @@ android/gen/
 local.properties
 com_crashlytics_export_strings.xml
 
+## Mine
 packImages/
+headlesstest/
+consoleoutput/
 
 ## GWT:
 war/

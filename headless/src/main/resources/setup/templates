@@ -1,0 +1,12 @@
+-templatetest:
+root:
+bob/bob.txt
+bob/bob2.txt
+build_gradle
+text.txt
+source:
+main_java
+main_kt
+-libgdx
+root:
+source:

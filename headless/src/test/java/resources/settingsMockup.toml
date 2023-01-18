@@ -1,61 +1,37 @@
 #This is a TOML document
 
-#This example is an imaginary setup mockup with two categories, each with two playgrounds.
-# setup
-#   -unsorted
-#       -io
-#       -input
-#   -shapes
-#       -blueCircle
-#       -redSquare
-
-title = "Settings Example"
-isIntegrated = true
+#Basic
+name = "TestProject"
+group = "com.playground.testproject"
 rootAssets = ""
 
-#[defaults]
-#type = "libgdx-integrated"
+#Projects
+projects.bird.launchers = ["hello", "world"]
+projects.bird.empty = false
+projects.helloworld.launchers = []
+projects.shapdrawercircle.launchers = ["lwjgl3", "lwjgl2"]
+projects.effects.launchers = ["singles"]
+projects.explosion.lauchers = []
+projects.alpha.launchers = []
 
-[playgrounds.testplayground.shapedrawercircle]
-    name = "shapedrawercircle"
-    launchers = ["lwjgl3", "lwjgl2"]
-    isLibgdxCompatible = true
+#---------- TEMPLATES ----------#
+# (root or source)."" represents the root
+# (root or source)."name" represents a folder inside the root.
+#
+# e.g.
+#
+# template.root."" = [] : template/
+# template.root."hello" = [] : template/hello
+# template.source."" = [] : source/
+# template.source."world" = [] : source/world
 
-[playgrounds.testplayground.javaproject]
-    name = "javaproject"
-    launchers = []
-    isLibgdxCompatible = false
+#Templatetest-template
+tempaltes.templatetest.root."" = ["buildGradle", "bob"]
+templates.templatetest.root."bob" = ["file1", "file2"]
+templates.templatetest.source."" = ["main_java.pg", "main_kt.pg"]
 
-[[playground.testplayground.shapedrawercircle]]
-    name = "shapedrawercircle"
-    launcheers = ["lwjgl3", "lwjgl2"]
-    isLibgdxCompatible = true
-
-[[playground.testplayround.javaproject]]
-    name = "javaproject"
-    launcheers = []
-    isLibgdxCompatible = false
-
-
-[unsorted.settings]
-    singleShot = true
-    createReadme = false
-    createGradleBuildFile = false
-    createLaunchers = false
-
-[unsorted.io]
-    path = "src/io"
-    type = "java"
-
-[unsorted.input]
-    path = "src/input"
-    type = "java"
-
-[shapes.blueCircle]
-    path = "src/blueCircle"
-    type = "libgdx"
-
-[shapes.redSquare]
-    path = "src/redSquare"
-    type = "libgdx"
+#Libgdx-template
+templates.libgdx.root."" = []
+templates.libgdx.core."core" = ["libgdx.txt"]
+templates.libgdx.source."" = ["ApplicationListener.java"]
 

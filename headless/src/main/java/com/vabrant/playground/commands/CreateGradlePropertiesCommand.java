@@ -4,12 +4,12 @@ import java.io.File;
 
 public class CreateGradlePropertiesCommand implements Command<File, Object> {
 
-    private final MacroCommand<File, Object> macro;
+    private final MacroCommand<File, Object> macroCommand;
     private final WriteToStringCommand writeToStringCommand;
 
     public CreateGradlePropertiesCommand(File outFile) {
         writeToStringCommand = new WriteToStringCommand();
-        macro = new MacroCommand<>(writeToStringCommand, new CreateFileCommand(outFile));
+        macroCommand = new MacroCommand<>(writeToStringCommand, new WriteToFileCommand(outFile));
     }
 
     public CreateGradlePropertiesCommand addProperty(String key, String value) {
@@ -43,6 +43,6 @@ public class CreateGradlePropertiesCommand implements Command<File, Object> {
 
     @Override
     public File execute() throws Exception {
-        return macro.execute();
+        return macroCommand.execute();
     }
 }
