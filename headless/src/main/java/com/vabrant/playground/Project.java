@@ -7,7 +7,6 @@ import java.util.List;
 public class Project {
 
     private boolean isNewProject;
-    private boolean isEmpty;
     private ArrayList<String> launchers;
     private String name;
     private String nameLowerCase;
@@ -19,28 +18,11 @@ public class Project {
         this.name = name;
         nameLowerCase = name.toLowerCase();
         rootDirectory = new File(projectsDirectory, nameLowerCase);
-//        sourceDirectory = new File(rootDirectory, "src/main/java/com/playground/" + nameLowerCase);
-//        launchersDirectory = new File(rootDirectory, "launchers");
     }
 
-//    public void empty() {
-//        isEmpty = true;
-//    }
-
-    public void setup(Playground playground, List<String> launchers) {
-        setup(playground);
-    }
-
-    public void setup(Playground playground) {
-        this.name = name;
-        nameLowerCase = name.toLowerCase();
-        rootDirectory = new File(playground.getProjectsDirectory(), nameLowerCase);
-
-        if (!isEmpty) {
-            sourceDirectory = new File(rootDirectory, "src/main/java/" + playground.getGroup() + '/' + nameLowerCase);
-            launchersDirectory = new File(rootDirectory, "launchers");
-        }
-//        sourceDirectory = new File(rootDirectory, "src/main/java/com/playground/" + nameLowerCase);
+    public void createSourceAndLaunchersDirectory(Playground playground) {
+        sourceDirectory = new File(rootDirectory, "src/main/java/" + playground.getGroup() + '/' + nameLowerCase);
+        launchersDirectory = new File(rootDirectory, "launchers");
     }
 
     public boolean isNewProject() {

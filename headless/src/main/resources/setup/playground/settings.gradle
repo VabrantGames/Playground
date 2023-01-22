@@ -1,7 +1,12 @@
 rootProject.name= '${PLAYGROUND_NAME}-Playground'
 
-//${include}
-//Do not delete above line
+//This section should not be manually edited.
+//#---------- GENERATED BEGIN ----------#
 
-//${project}
-//Do not delete above line
+//Include-Begin
+//Include-End
+
+//Project-Begin
+//Project-End
+
+//#---------- GENERATED END ----------#

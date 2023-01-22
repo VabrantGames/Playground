@@ -5,7 +5,9 @@ import picocli.CommandLine;
 @CommandLine.Command(name = "Playground")
 public class PlaygroundCommandData {
 
-    @CommandLine.Option(names = "-i")
+    @CommandLine.Option(
+            names = "-i",
+            description = "Initialize Playground")
     private boolean initialize;
 
     @CommandLine.Option(names = "-n")

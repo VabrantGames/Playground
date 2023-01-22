@@ -1,11 +1,12 @@
-#This is a TOML document
+#This is a generated TOML document
+#DO NOT MODIFY (Unless you know what you're doing of course :))
 
 #Basic
 name = "TestProject"
 group = "com.playground.testproject"
 rootAssets = ""
 
-#Projects
+#Projects Begin
 projects.bird.launchers = ["hello", "world"]
 projects.bird.empty = false
 projects.helloworld.launchers = []
@@ -13,6 +14,7 @@ projects.shapdrawercircle.launchers = ["lwjgl3", "lwjgl2"]
 projects.effects.launchers = ["singles"]
 projects.explosion.lauchers = []
 projects.alpha.launchers = []
+#Projects End
 
 #---------- TEMPLATES ----------#
 # (root or source)."" represents the root

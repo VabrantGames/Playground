@@ -9,7 +9,7 @@ import java.util.function.Function;
 
 public class ReadAsStringCommand implements Command<String, Object> {
 
-    private File file;
+    private final File file;
     private ReadAsBytesCommand rbc;
     private Function<String, String> function;
 

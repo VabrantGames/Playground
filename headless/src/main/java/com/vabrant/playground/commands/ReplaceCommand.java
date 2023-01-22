@@ -20,7 +20,7 @@ public class ReplaceCommand implements Command<String, Object> {
         if (data instanceof String) {
             str = (String) data;
         } else if (data instanceof byte[]) {
-            str = new String((byte[])data, StandardCharsets.UTF_8);
+            str = new String((byte[]) data, StandardCharsets.UTF_8);
         } else {
             throw new RuntimeException("Input not supported");
         }

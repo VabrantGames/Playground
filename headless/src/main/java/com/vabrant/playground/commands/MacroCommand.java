@@ -29,11 +29,6 @@ public class MacroCommand<T, U> implements Command<T, U> {
     public T execute() throws Exception {
         Object output = null;
 
-//        {
-//            Command c = commands.get(0);
-//            c.setData(data);
-//        }
-
         if (data != null) commands.get(0).setData(data);
 
         for (int i = 0, n = commands.size(); i < n; i++) {

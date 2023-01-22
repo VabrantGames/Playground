@@ -1,12 +1,9 @@
 package com.vabrant.playground;
 
 import com.vabrant.playground.commands.*;
-import org.tomlj.Toml;
-import org.tomlj.TomlParseResult;
 import picocli.CommandLine;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,48 +16,14 @@ public class Headless implements Callable<Integer> {
 
     public static void main(String[] args) {
 
-        String[] input = {"--path", "/volumes/johnshd/developer/java/playgroundoutputtest", "-i", "-n", "Snake", "-p", "Bird:templatetest",
-                "-l", "lwjgl3"};
-//        String[] input = {"--path", "/volumes/johnshd/developer/java/playgroundoutputtest", "-p", "hi"};
+//        String[] input = {"--path", "/volumes/johnshd/developer/java/playgroundoutputtest", "-i", "-n", "Snake", "-p", "Bird:templatetest",
+//                "-l", "lwjgl3"};
+//        String[] input = {"--path", "/volumes/johnshd/developer/java/playgroundoutputtest", "-in", "MyPlayground", "-p", "FirstProject"};
+        String[] input = {"--path", "/volumes/johnshd/developer/java/playgroundoutputtest", "-in", "MyPlayground", "-p", "HelloWorld"};
         String[] project = {" ", "-p", "hello"};
 
         int exitCode = new CommandLine(new Headless()).execute(input);
         System.exit(exitCode);
-//        try {
-////            URLClassLoader.newInstance()
-////            System.out.println(URLClassLoader.getSystemResource("templates/default/root/").getProtocol());
-////            System.out.println(URLClassLoader.getSystemResource("templates/default/root/buildGradle/").getProtocol());
-//            System.out.println(Headless.class.getResource("/templates/default/roo/") == null);
-//            System.out.println(Headless.class.getResource("/templates/default/root/buildGradle/") == null);
-//
-//            InputStream is = Headless.class.getResourceAsStream("/templates/default/root");
-//            System.out.println(is.toString());
-//
-//            BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
-//
-//            String line;
-//            while ((line = br.readLine()) != null) {
-//                try {
-//                    InputStream is2 = Headless.class.getResourceAsStream("/templates/default/root/" + line);
-//                    BufferedReader br2 = new BufferedReader(new InputStreamReader(is2, StandardCharsets.UTF_8));
-//
-//                    String s;
-//                    while ((s = br2.readLine()) != null) {
-//                        System.out.println(s);
-//                    }
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                    System.exit(-1);
-//                }
-//            }
-//
-//            System.out.println("Null: " + is == null);
-//
-//            if (is != null) is.close();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            System.exit(-1);
-//        }
     }
 
     private final String PLAYGROUND_NAME = "${PLAYGROUND_NAME}";
@@ -70,17 +33,12 @@ public class Headless implements Callable<Integer> {
     private final String PROJECT_NAME_LOWERCASE = "${PROJECT_NAME_LOWERCASE}";
     private final String GROUP = "${GROUP}";
 
-    private String[] launchers = {"lwjgl3"};
-
     private File rootDirectory;
     private Playground playground;
     private Settings settings;
 
     @CommandLine.Option(names = {"--path"})
     String inputDirectory;
-
-//    @CommandLine.Option(names = {"-i", "--init"})
-//    boolean initializePlayground;
 
     @CommandLine.ArgGroup(exclusive = false, multiplicity = "0..1")
     PlaygroundCommandData playgroundCommandData;
@@ -98,22 +56,13 @@ public class Headless implements Callable<Integer> {
 
         try {
             setupPlayground(inputDirectory);
-            checkProjectData();
             handleProjects();
-
-//            commandQueue.execute();
+            commandQueue.execute();
         } catch (Exception e) {
             e.printStackTrace();
             return -1;
         }
         return 0;
-    }
-
-    public boolean doesLauncherExist(String launcher) {
-        for (String s : launchers) {
-            if (s.equalsIgnoreCase(launcher)) return true;
-        }
-        return false;
     }
 
     Map<String, String> createMap(Consumer<Map<String, String>> c) {
@@ -138,7 +87,11 @@ public class Headless implements Callable<Integer> {
             }
         } else if (!isInitialized) {
             if (playgroundCommandData == null || !playgroundCommandData.initialize()) {
-                throw new RuntimeException("Playground has not been initialized.");
+                throw new RuntimeException("Playground has not been initialized. Usage: -i");
+            } else if (playgroundCommandData.getName() == null) {
+                throw new RuntimeException("No name specified. Usage: -n <name>");
+            } else {
+                playground.setup(playgroundCommandData);
             }
         }
 
@@ -159,60 +112,63 @@ public class Headless implements Callable<Integer> {
                 })))
                 .add(new WriteToFileCommand(new File(playground.getPlaygroundDirectory(), "settings.gradle"))));
         commandQueue.add(new WriteToFileCommand(new File(playground.getProjectsDirectory(), ".gitkeep")));
-    }
-
-    //Ensure the options that were passed in are real
-    public void checkProjectData() {
-        if (projectsCommandData == null) return;
-
-        for (ProjectCommandData d : projectsCommandData) {
-            //Check if the playground has a folder with the name
-
-            if (d.launchers != null) {
-                for (String s : d.launchers) {
-                    if (!doesLauncherExist(s)) throw new RuntimeException("Launcher not found. Name: " + s);
-                }
-            }
-        }
+        commandQueue.add(new MacroCommand()
+                .add(new ReadAsBytesCommand("/setup/playground/settings_toml"))
+                .add(new ReplaceCommand(createMap(m -> {
+                    m.put(PLAYGROUND_NAME, playground.getName());
+                    m.put(PLAYGROUND_NAME_LOWERCASE, playground.getNameLowerCase());
+                    m.put(GROUP, playground.getGroup());
+                })))
+                .add(new WriteToFileCommand(new File(playground.getPlaygroundDirectory(), "settings.toml"))));
     }
 
     private void handleProjects() throws Exception {
         if (projectsCommandData == null) return;
 
+        ArrayList<Project> projects = new ArrayList<>();
         for (ProjectCommandData d : projectsCommandData) {
-            setupProject(d);
+            Project p = setupProject(d);
+            projects.add(p);
         }
 
+        addProjectsToGradleSettings(projects);
+        ChangeSettingsFileCommand c = new ChangeSettingsFileCommand(settings, projects);
+        c.setData(new ReadAsBytesCommand(new File(playground.getPlaygroundDirectory(), "settings.toml")).execute());
 
     }
 
-    private void setupProject(ProjectCommandData projectData) throws Exception {
+    private Project setupProject(ProjectCommandData projectData) throws Exception {
         char[] nameAsCharArray = projectData.getName().toCharArray();
         if (nameAsCharArray.length == 0 || projectData.getName().isBlank())
-            throw new RuntimeException("Project name can't be empty");
+            throw new RuntimeException("Project name can't be empty.");
         if (nameAsCharArray[0] == ':' || nameAsCharArray[nameAsCharArray.length - 1] == ':')
-            throw new RuntimeException("Invalid project name.");
+            throw new RuntimeException("Invalid project name. ':' Can't be at beginning or last index.");
 
         String[] projectNameSplit = Utils.splitByChar(nameAsCharArray, ':');
-        if (projectNameSplit.length == 2) {
-            projectData.setTemplateString(projectNameSplit[1]);
-        } else {
-            throw new RuntimeException("Invalid project name. Too many options.");
+        switch (projectNameSplit.length) {
+            case 1:
+                break;
+            case 2:
+                projectData.setTemplateString(projectNameSplit[1]);
+                break;
+            default:
+                throw new RuntimeException("Invalid project name. Too many options.");
         }
 
         boolean newProject = false;
         Project project = new Project(projectNameSplit[0], playground.getProjectsDirectory());
 
+        //TODO Check if passed in launchers exist
+
         if (settings != null && settings.hasProjectName(projectNameSplit[0])) {
-            project.setup(playground, settings.getLaunchers(projectNameSplit[0]));
         } else {
             newProject = true;
-            project.setup(playground);
         }
 
         if (newProject) {
             project.setNewProject();
-            System.out.println("[New Project] " + projectNameSplit[0]);
+            project.createSourceAndLaunchersDirectory(playground);
+            System.out.println("New Project Added: " + projectNameSplit[0]);
 
             commandQueue
                     .add(new CreateDirectoryCommand(project.getRootDirectory()))
@@ -220,6 +176,8 @@ public class Headless implements Callable<Integer> {
                     .add(new CreateDirectoryCommand(project.getLaunchersDirectory()))
                     .add(new CreateDirectoryCommand(new File(project.getLaunchersDirectory(), ".gitkeep")));
         }
+
+        return project;
     }
 
     private void handleTemplates(ProjectCommandData projectData, Project project) throws Exception {
@@ -294,11 +252,12 @@ public class Headless implements Callable<Integer> {
         }
     }
 
-    private void addProjectsToGradleSettings() throws Exception {
-        File gradleSettings = new File(playground.getPlaygroundDirectory(), "settings.gradle");
-        commandQueue.add(new WriteToSettingsFileCommand(gradleSettings, projectsCommandData));
-//        WriteToSettingsFileCommand c = new WriteToSettingsFileCommand(gradleSettings, projects);
-//        c.execute();
+    private void addProjectsToGradleSettings(ArrayList<Project> projects) throws Exception {
+        File file = new File(playground.getPlaygroundDirectory(), "settings.gradle");
+        commandQueue.add(new MacroCommand()
+                .add(new ReadAsBytesCommand(file))
+                .add(new ChangeGradleSettingsCommand(projects))
+                .add(new WriteToFileCommand(file)));
     }
 
 }

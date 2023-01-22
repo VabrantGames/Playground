@@ -1,9 +1,0 @@
-include ':shared'
-include ':shapedrawer'
-include ':shapedrawerlwjgl3'
-
-project(':shared').projectDir = new File('projects/shared')
-project(':shapedrawer').projectDir = new File('projects/shapedrawer')
-project(':shapedrawerlwjgl3').projectDir = new File('projects/shapedrawer/launchers/lwjgl3')
-
-rootProject.name = "PlaygroundManualTest"

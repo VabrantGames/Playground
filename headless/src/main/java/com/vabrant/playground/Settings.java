@@ -26,7 +26,9 @@ public class Settings {
     }
 
     public boolean hasProjectName(String name) {
-        return getProjectsTable().contains(name);
+        TomlTable t = getProjectsTable();
+        return t == null || t.contains(name);
+//        return getProjectsTable().contains(name);
 //        return projectsMap.containsKey(name);
     }
 
