@@ -5,10 +5,10 @@ import picocli.CommandLine;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.function.Consumer;
+
+import static com.vabrant.playground.PlaygroundUtils.*;
 
 @CommandLine.Command(
         name = "Playground")
@@ -65,22 +65,17 @@ public class Headless implements Callable<Integer> {
         return 0;
     }
 
-    Map<String, String> createMap(Consumer<Map<String, String>> c) {
-        Map<String, String> map = new HashMap();
-        c.accept(map);
-        return map;
-    }
-
     private void setupPlayground(String path) throws Exception {
         playground = new Playground(rootDirectory);
+        settings = new Settings();
 
         boolean isInitialized = playground.getPlaygroundDirectory().isDirectory();
+        File settingsFile = new File(playground.getPlaygroundDirectory(), "settings.toml");
 
         if (isInitialized) {
-            File settingsFile = new File(playground.getPlaygroundDirectory(), "settings.toml");
 
             if (settingsFile.exists()) {
-                settings = new Settings(settingsFile);
+                settings.load(settingsFile);
                 return;
             } else {
                 throw new RuntimeException("Settings file not found");
@@ -119,7 +114,7 @@ public class Headless implements Callable<Integer> {
                     m.put(PLAYGROUND_NAME_LOWERCASE, playground.getNameLowerCase());
                     m.put(GROUP, playground.getGroup());
                 })))
-                .add(new WriteToFileCommand(new File(playground.getPlaygroundDirectory(), "settings.toml"))));
+                .add(new WriteToFileCommand(settingsFile)));
     }
 
     private void handleProjects() throws Exception {
@@ -132,9 +127,7 @@ public class Headless implements Callable<Integer> {
         }
 
         addProjectsToGradleSettings(projects);
-        ChangeSettingsFileCommand c = new ChangeSettingsFileCommand(settings, projects);
-        c.setData(new ReadAsBytesCommand(new File(playground.getPlaygroundDirectory(), "settings.toml")).execute());
-
+        updateSettings(projects);
     }
 
     private Project setupProject(ProjectCommandData projectData) throws Exception {
@@ -144,7 +137,7 @@ public class Headless implements Callable<Integer> {
         if (nameAsCharArray[0] == ':' || nameAsCharArray[nameAsCharArray.length - 1] == ':')
             throw new RuntimeException("Invalid project name. ':' Can't be at beginning or last index.");
 
-        String[] projectNameSplit = Utils.splitByChar(nameAsCharArray, ':');
+        String[] projectNameSplit = PlaygroundUtils.splitByChar(nameAsCharArray, ':');
         switch (projectNameSplit.length) {
             case 1:
                 break;
@@ -183,7 +176,7 @@ public class Headless implements Callable<Integer> {
     private void handleTemplates(ProjectCommandData projectData, Project project) throws Exception {
         if (projectData.getTemplateString() == null) return;
 
-        Map<String, Map<String, Object>> templateSettings = settings.getTemplatesMap();
+        Map<String, Map<String, Object>> templateSettings = (Map) settings.getTemplatesMap();
 
         if (playground.getSettings() == null) {
 //            Toml defaultTemplates = new Toml().read(Headless.class.getResourceAsStream("/setup/templates.toml"));
@@ -257,6 +250,14 @@ public class Headless implements Callable<Integer> {
         commandQueue.add(new MacroCommand()
                 .add(new ReadAsBytesCommand(file))
                 .add(new ChangeGradleSettingsCommand(projects))
+                .add(new WriteToFileCommand(file)));
+    }
+
+    private void updateSettings(ArrayList<Project> projects) {
+        File file = new File(playground.getPlaygroundDirectory(), "settings.toml");
+        commandQueue.add(new MacroCommand()
+                .add(new ReadAsBytesCommand(file))
+                .add(new ChangeSettingsFileCommand(settings, projects))
                 .add(new WriteToFileCommand(file)));
     }
 

@@ -1,10 +1,16 @@
 # This is a generated TOML document
-# Manual modifications are strongly
+# This file should not be manually edited
 
 #Basic
 name = "${PLAYGROUND_NAME}"
 group = "${GROUP}.${PLAYGROUND_NAME_LOWERCASE}"
 
-#Projects
+#Projects Begin
+#Projects End
 
 #Templates
+templates.templatetest.root."" = [
+
+tempaltes.templatetest.root."" = ["buildGradle", "bob"]
+templates.templatetest.root."bob" = ["file1", "file2"]
+templates.templatetest.source."" = ["main_java.pg", "main_kt.pg"]

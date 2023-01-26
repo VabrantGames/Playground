@@ -8,6 +8,7 @@ public class Project {
 
     private boolean isNewProject;
     private ArrayList<String> launchers;
+    private ArrayList<String> newLaunchers;
     private String name;
     private String nameLowerCase;
     private File rootDirectory;
@@ -18,11 +19,16 @@ public class Project {
         this.name = name;
         nameLowerCase = name.toLowerCase();
         rootDirectory = new File(projectsDirectory, nameLowerCase);
+        newLaunchers = new ArrayList<>();
     }
 
     public void createSourceAndLaunchersDirectory(Playground playground) {
         sourceDirectory = new File(rootDirectory, "src/main/java/" + playground.getGroup() + '/' + nameLowerCase);
         launchersDirectory = new File(rootDirectory, "launchers");
+    }
+
+    public ArrayList<String> getNewLaunchers() {
+        return newLaunchers;
     }
 
     public boolean isNewProject() {

@@ -1,12 +1,12 @@
 package com.vabrant.playground;
 
-import java.io.File;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
-public class Utils {
+public class PlaygroundUtils {
 
     private static final String[] RESTRICTED_KEYWORDS = {
             "assets",
@@ -18,6 +18,12 @@ public class Utils {
             if (s.equals(keyword)) return true;
         }
         return false;
+    }
+
+    public static Map<String, String> createMap(Consumer<Map<String, String>> c) {
+        Map<String, String> map = new HashMap<>();
+        c.accept(map);
+        return map;
     }
 
     public static Map<String, Object> asMap(Object o) {

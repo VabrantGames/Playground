@@ -1,4 +1,3 @@
-bob.apple = "jo"
 templatetest.root."" = ["buildGradle", "text"]
 templatetest.root."bob" = ["bob.txt", "bob2.txt"]
 templatetest.source."" = ["main_java.pg", "main_java.pg"]

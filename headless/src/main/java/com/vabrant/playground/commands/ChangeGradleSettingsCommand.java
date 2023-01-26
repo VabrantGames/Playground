@@ -112,10 +112,9 @@ public class ChangeGradleSettingsCommand implements Command<String, Object> {
                 }
             }
 
-            if (idx.get() < map.size() - 1) {
+            if (idx.getAndIncrement() < map.size() - 1) {
             }
             builder.append(System.lineSeparator());
-            idx.getAndIncrement();
         });
     }
 
@@ -143,11 +142,9 @@ public class ChangeGradleSettingsCommand implements Command<String, Object> {
                 }
             }
 
-            if (idx.get() < map.size() - 1) {
+            if (idx.getAndIncrement() < map.size() - 1) {
                 builder.append(System.lineSeparator());
             }
-
-            idx.getAndIncrement();
         });
 
     }

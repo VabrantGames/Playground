@@ -1,10 +1,7 @@
 package com.vabrant.playground.test;
 
-import com.vabrant.playground.ProjectData;
-import com.vabrant.playground.Utils;
 import org.junit.jupiter.api.Test;
 import org.tomlj.Toml;
-import org.tomlj.TomlArray;
 import org.tomlj.TomlParseResult;
 import org.tomlj.TomlTable;
 
