@@ -1,7 +1,10 @@
 package com.vabrant.playground.commands;
 
+import com.vabrant.playground.commands.macro.MacroCommand;
+
 import java.io.File;
 
+@Deprecated
 public class CreateGradlePropertiesCommand implements Command<File, Object> {
 
     private final MacroCommand<File, Object> macroCommand;
@@ -42,7 +45,7 @@ public class CreateGradlePropertiesCommand implements Command<File, Object> {
     }
 
     @Override
-    public File execute() throws Exception {
-        return macroCommand.execute();
+    public File execute(Object data) throws Exception {
+        return macroCommand.execute(null);
     }
 }

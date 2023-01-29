@@ -1,6 +1,7 @@
 package com.vabrant.playground;
 
 import com.vabrant.playground.commands.*;
+import com.vabrant.playground.commands.macro.MacroCommand;
 import picocli.CommandLine;
 
 import java.io.File;
@@ -46,7 +47,8 @@ public class Headless implements Callable<Integer> {
     @CommandLine.ArgGroup(exclusive = false, multiplicity = "0..*")
     ProjectCommandData[] projectsCommandData;
 
-    private final CommandQueue commandQueue = new CommandQueue();
+    private final CommandQueue mainCommandQueue = new CommandQueue();
+    private CommandQueue commandQueue = mainCommandQueue;
 
     @Override
     public Integer call() throws Exception {
@@ -57,7 +59,7 @@ public class Headless implements Callable<Integer> {
         try {
             setupPlayground(inputDirectory);
             handleProjects();
-            commandQueue.execute();
+            commandQueue.execute(null);
         } catch (Exception e) {
             e.printStackTrace();
             return -1;
@@ -122,10 +124,16 @@ public class Headless implements Callable<Integer> {
 
         ArrayList<Project> projects = new ArrayList<>();
         for (ProjectCommandData d : projectsCommandData) {
+            CommandQueue queue = new CommandQueue();
+            commandQueue = queue;
             Project p = setupProject(d);
             projects.add(p);
+
+            queue.setErrorCallback(new ProjectErrorCallback(p));
+            mainCommandQueue.add(commandQueue);
         }
 
+        commandQueue = mainCommandQueue;
         addProjectsToGradleSettings(projects);
         updateSettings(projects);
     }
@@ -148,7 +156,7 @@ public class Headless implements Callable<Integer> {
                 throw new RuntimeException("Invalid project name. Too many options.");
         }
 
-        boolean newProject = false;
+        boolean newProject = true;
         Project project = new Project(projectNameSplit[0], playground.getProjectsDirectory());
 
         //TODO Check if passed in launchers exist
@@ -165,9 +173,17 @@ public class Headless implements Callable<Integer> {
 
             commandQueue
                     .add(new CreateDirectoryCommand(project.getRootDirectory()))
-                    .add(new CreateDirectoryCommand(project.getSourceDirectory()))
+                    .add(new CreateDirectoryCommand(project.getRootDirectory(), "src/main/java"))
+//                    .add(new CreateDirectoryCommand(project.getSourceDirectory()))
                     .add(new CreateDirectoryCommand(project.getLaunchersDirectory()))
-                    .add(new CreateDirectoryCommand(new File(project.getLaunchersDirectory(), ".gitkeep")));
+                    .add(new WriteToFileCommand(new File(project.getLaunchersDirectory(), ".gitkeep")));
+            commandQueue.add(new Command() {
+                @Override
+                public Object execute(Object object) {
+                    System.out.println("Is this ran?");
+                    throw new RuntimeException("Problem with project but not playground");
+                }
+            });
         }
 
         return project;

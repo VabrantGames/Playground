@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 
 public class WriteToFileCommand implements Command<File, Object> {
 
@@ -16,16 +17,26 @@ public class WriteToFileCommand implements Command<File, Object> {
     }
 
     @Override
-    public void setData(Object data) {
+    public void revert() {
+        if (file != null && file.isFile()) {
+            System.out.println("Delete File: " + file.getPath());
+//            file.delete();
+            try {
+                Files.delete(file.toPath());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public File execute(Object data) throws Exception {
         if (data instanceof String) {
             bytes = ((String) data).getBytes(StandardCharsets.UTF_8);
         } else {
             bytes = (byte[]) data;
         }
-    }
 
-    @Override
-    public File execute() throws Exception {
         try (OutputStream os = new BufferedOutputStream(new FileOutputStream(file))) {
             if (bytes != null) {
                 os.write(bytes);

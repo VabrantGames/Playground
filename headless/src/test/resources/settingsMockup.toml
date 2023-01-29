@@ -2,8 +2,8 @@
 #DO NOT MODIFY (Unless you know what you're doing of course :))
 
 #Basic
-name = "TestProject"
-group = "com.playground.testproject"
+name = "Settings"
+group = "com.playground.settings"
 rootAssets = ""
 
 #Projects Begin
@@ -28,7 +28,7 @@ projects.alpha.launchers = []
 # template.source."world" = [] : source/world
 
 #Templatetest-template
-tempaltes.templatetest.root."" = ["buildGradle", "bob"]
+templates.templatetest.root."" = ["buildGradle", "bob"]
 templates.templatetest.root."bob" = ["file1", "file2"]
 templates.templatetest.source."" = ["main_java.pg", "main_kt.pg"]
 

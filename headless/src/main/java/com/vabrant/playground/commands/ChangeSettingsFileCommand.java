@@ -21,10 +21,10 @@ public class ChangeSettingsFileCommand implements Command<String, byte[]> {
         this.projects = projects;
     }
 
-    @Override
-    public void setData(byte[] data) {
-        str = new String(data, StandardCharsets.UTF_8);
-    }
+//    @Override
+//    public void setData(byte[] data) {
+////        str = new String(data, StandardCharsets.UTF_8);
+//    }
 
     private void buildTomlString(StringBuilder builder, Map<String, ObjectSet<String>> map) {
         map.forEach((k, v) -> {
@@ -50,7 +50,9 @@ public class ChangeSettingsFileCommand implements Command<String, byte[]> {
     }
 
     @Override
-    public String execute() throws Exception {
+    public String execute(byte[] data) throws Exception {
+        str = new String(data, StandardCharsets.UTF_8);
+
         Map<String, ObjectSet<String>> allProjects = new HashMap<>();
 
         //Add existing settings

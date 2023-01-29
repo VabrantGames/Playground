@@ -1,7 +1,6 @@
 package com.vabrant.playground.commands;
 
 public interface Command<T, U> {
-    T execute() throws Exception;
-    default void setData(U data) {}
-
+    T execute(U data) throws Exception;
+    default void revert() {}
 }

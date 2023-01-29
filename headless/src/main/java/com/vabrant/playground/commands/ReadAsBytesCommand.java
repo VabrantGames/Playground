@@ -18,7 +18,7 @@ public class ReadAsBytesCommand implements Command<byte[], Object> {
     }
 
     @Override
-    public byte[] execute() throws Exception {
+    public byte[] execute(Object data) throws Exception {
         InputStream is = null;
 
         try {

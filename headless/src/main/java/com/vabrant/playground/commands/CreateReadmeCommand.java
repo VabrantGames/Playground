@@ -24,7 +24,7 @@ public class CreateReadmeCommand implements Command {
     }
 
     @Override
-    public Object execute() throws Exception {
+    public Object execute(Object data) throws Exception {
 
         return null;
     }

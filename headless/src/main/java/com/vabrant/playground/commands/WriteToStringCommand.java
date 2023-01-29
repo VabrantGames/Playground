@@ -25,7 +25,7 @@ public class WriteToStringCommand implements Command<String, Object> {
     }
 
     @Override
-    public String execute() throws Exception {
+    public String execute(Object data) throws Exception {
         return builder.toString();
     }
 }

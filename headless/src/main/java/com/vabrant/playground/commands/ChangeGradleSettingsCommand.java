@@ -19,11 +19,11 @@ public class ChangeGradleSettingsCommand implements Command<String, Object> {
         this.projects = projects;
     }
 
-    @Override
-    public void setData(Object data) {
-        if (!(data instanceof byte[])) throw new RuntimeException("Invalid Gradle settings data");
-        str = new String((byte[]) data, StandardCharsets.UTF_8);
-    }
+//    @Override
+//    public void setData(Object data) {
+//        if (!(data instanceof byte[])) throw new RuntimeException("Invalid Gradle settings data");
+//        str = new String((byte[]) data, StandardCharsets.UTF_8);
+//    }
 
     private void loadIncludesSection(Map<String, ArrayList<String>> map, String str) {
         int beginIdx = str.indexOf(includeBeginString);
@@ -150,7 +150,10 @@ public class ChangeGradleSettingsCommand implements Command<String, Object> {
     }
 
     @Override
-    public String execute() throws Exception {
+    public String execute(Object data) throws Exception {
+        if (!(data instanceof byte[])) throw new RuntimeException("Invalid Gradle settings data");
+        str = new String((byte[]) data, StandardCharsets.UTF_8);
+
         String preGeneratorStuff = str.substring(0, str.indexOf(includeBeginString));
         Map<String, ArrayList<String>> includeMap = new HashMap<>();
         Map<String, ArrayList<String>> projectMap = new HashMap<>();

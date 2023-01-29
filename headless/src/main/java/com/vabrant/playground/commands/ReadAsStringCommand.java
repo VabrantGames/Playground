@@ -3,10 +3,9 @@ package com.vabrant.playground.commands;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.StringReader;
-import java.nio.charset.StandardCharsets;
 import java.util.function.Function;
 
+@Deprecated
 public class ReadAsStringCommand implements Command<String, Object> {
 
     private final File file;
@@ -24,7 +23,7 @@ public class ReadAsStringCommand implements Command<String, Object> {
     }
 
     @Override
-    public String execute() throws Exception {
+    public String execute(Object data) throws Exception {
 //        return new String(rbc.execute(), StandardCharsets.UTF_8);
 
 
