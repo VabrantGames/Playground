@@ -1,33 +1,45 @@
 package com.vabrant.playground;
 
-import com.moandjiezana.toml.Toml;
+import org.tomlj.TomlTable;
 
 import java.io.File;
-import java.util.Map;
 
 public class Playground {
 
+    private boolean isNewPlayground;
     private String name;
     private String nameLowerCase;
     private String group;
     private File playgroundDirectory;
     private File projectsDirectory;
-    private File settingsFile;
-    private Toml settings;
 
     Playground(File rootDirectory) {
         playgroundDirectory = new File(rootDirectory, "playground");
         projectsDirectory = new File(playgroundDirectory, "projects");
     }
 
-    public void setup(PlaygroundCommandData data) {
-        name = data.getName();
+    public void setup(String name) {
+        this.name = name;
         nameLowerCase = name.toLowerCase();
-        group = data.getGroup();
+        group = "com.playground." + nameLowerCase;
     }
 
     public void setup(Settings settings) {
+        TomlTable table = settings.getMainTable();
+        name = table.getString("name");
 
+        if (name == null) throw new RuntimeException("Error setting up Playground from Settings.toml. Name is null");
+
+        nameLowerCase = name.toLowerCase();
+        group = "com.playground." + nameLowerCase;
+    }
+
+    public void newPlayground() {
+        isNewPlayground = true;
+    }
+
+    public boolean isNewPlayground() {
+        return isNewPlayground;
     }
 
     public String getName() {
@@ -50,11 +62,4 @@ public class Playground {
         return projectsDirectory;
     }
 
-    public File getSettingsFile() {
-        return settingsFile;
-    }
-
-    public Toml getSettings() {
-        return settings;
-    }
 }

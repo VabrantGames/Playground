@@ -1,0 +1,13 @@
+plugins {
+    id "java-library"
+}
+
+sourceCompatibility = 1.8
+
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+eclipse.project.name = '${PLAYGROUND_NAME}Playground-${PROJECT_NAME}'
+group += '.${PROJECT_NAME_LOWERCASE}'
+
+dependencies {
+    api "com.badlogicgames.gdx:gdx:$gdxVersion"
+}

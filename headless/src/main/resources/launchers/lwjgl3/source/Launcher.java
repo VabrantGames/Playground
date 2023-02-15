@@ -1,11 +1,11 @@
-package com.playground.${PROJECT_NAME_LOWERCASE};
+package ${GROUP}.launchers.lwjgl3;
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
-import com.playground.${PROJECT_NAME_LOWERCASE}.${PROJECT_NAME};
+import ${GROUP}.${PROJECT_NAME};
 
 /** Launches the desktop (LWJGL3) application. */
-public class Lwjgl3Launcher {
+public class ${PROJECT_NAME}Lwjgl3Launcher {
 	public static void main(String[] args) {
 		createApplication();
 	}

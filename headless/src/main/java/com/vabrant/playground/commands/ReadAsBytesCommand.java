@@ -6,11 +6,18 @@ import java.io.*;
 
 public class ReadAsBytesCommand implements Command<byte[], Object> {
 
+    //    private boolean isResource;
     String resource;
     private File file;
 
-    public ReadAsBytesCommand(String resource) {
-        this.resource = resource;
+    public ReadAsBytesCommand(boolean isResource, String str) {
+        if (isResource) {
+            this.resource = str;
+
+        } else {
+            file = new File(str);
+        }
+//        this.isResource = isResource;
     }
 
     public ReadAsBytesCommand(File file) {
@@ -36,8 +43,14 @@ public class ReadAsBytesCommand implements Command<byte[], Object> {
             }
             return baos.toByteArray();
         } catch (Exception e) {
-            System.out.println(resource);
-            throw new RuntimeException(e);
+            String s;
+            if (resource != null) {
+                s = "Error reading resource: " + resource;
+            } else {
+                s = "Error reading file: " + file.toString();
+            }
+//            System.out.println(resource);
+            throw new RuntimeException(s, e);
         } finally {
             if (is != null) {
                 is.close();

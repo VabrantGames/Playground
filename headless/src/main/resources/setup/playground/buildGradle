@@ -16,7 +16,6 @@ allprojects {
     apply plugin: "eclipse"
     apply plugin: "idea"
 
-    ext.appName = '${PLAYGROUND_NAME}-Playground'
     group = '${GROUP}'
 
     repositories {
@@ -36,4 +35,4 @@ tasks.eclipse.doLast {
     delete ".settings/"
 }
 
-eclipse.project.name = '${PLAYGROUND_NAME}-Playground' + '-parent'
+eclipse.project.name = '${PLAYGROUND_NAME}Playground' + '-parent'

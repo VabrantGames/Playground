@@ -23,13 +23,6 @@ public class MacroCommand<T, U> implements Command<T, U> {
     }
 
     @Override
-    public void revert() {
-        for (int i = idx; i >= 0; i--) {
-            commands.get(i).revert();
-        }
-    }
-
-    @Override
     public T execute(U data) throws Exception {
         Object output = null;
 

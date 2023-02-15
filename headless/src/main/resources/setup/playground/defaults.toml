@@ -1,0 +1,12 @@
+[defaultGradleVersions]
+gdxVersion = "1.11.0"
+
+[templates.libGDX]
+isResource = true
+root."" = ["build.gradle"]
+source."" = ["Template.java"]
+
+[launchers.Lwjgl3]
+isResource = true
+root."" = ["build.gradle"]
+source."" = ["Launcher.java"]

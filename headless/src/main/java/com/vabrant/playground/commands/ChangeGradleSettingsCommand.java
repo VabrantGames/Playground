@@ -1,9 +1,13 @@
 package com.vabrant.playground.commands;
 
+import com.github.tommyettinger.ds.ObjectList;
 import com.vabrant.playground.Project;
 
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+//import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ChangeGradleSettingsCommand implements Command<String, Object> {
@@ -13,19 +17,12 @@ public class ChangeGradleSettingsCommand implements Command<String, Object> {
     private final String projectBeginString = "//Project-Begin";
 
     private final List<Project> projects;
-    private String str;
 
     public ChangeGradleSettingsCommand(List<Project> projects) {
         this.projects = projects;
     }
 
-//    @Override
-//    public void setData(Object data) {
-//        if (!(data instanceof byte[])) throw new RuntimeException("Invalid Gradle settings data");
-//        str = new String((byte[]) data, StandardCharsets.UTF_8);
-//    }
-
-    private void loadIncludesSection(Map<String, ArrayList<String>> map, String str) {
+    private void readIncludesSection(Map<String, List<String>> map, String str) {
         int beginIdx = str.indexOf(includeBeginString);
         int endIdx = str.indexOf("//Include-End");
 
@@ -48,7 +45,7 @@ public class ChangeGradleSettingsCommand implements Command<String, Object> {
                 launcher = s.substring(lastIdx + 1);
             }
 
-            if (!map.containsKey(name)) map.put(name, new ArrayList<>());
+            if (!map.containsKey(name)) map.put(name, new ObjectList<>());
 
             if (launcher != null) {
                 map.get(name).add(launcher);
@@ -56,7 +53,7 @@ public class ChangeGradleSettingsCommand implements Command<String, Object> {
         }
     }
 
-    private void loadProjectSection(Map<String, ArrayList<String>> map, String str) {
+    private void readProjectSection(Map<String, List<String>> map, String str) {
         int beginIdx = str.indexOf(projectBeginString);
         int endIdx = str.indexOf("//Project-End");
 
@@ -78,7 +75,7 @@ public class ChangeGradleSettingsCommand implements Command<String, Object> {
                 launcher = s.substring(lastIdx + 1);
             }
 
-            if (!map.containsKey(name)) map.put(name, new ArrayList<>());
+            if (!map.containsKey(name)) map.put(name, new ObjectList<>());
 
             if (launcher != null) {
                 map.get(name).add(launcher);
@@ -86,15 +83,23 @@ public class ChangeGradleSettingsCommand implements Command<String, Object> {
         }
     }
 
-    private void addProjectsToSection(Map<String, ArrayList<String>> map) {
+    private void addProjectsToSection(Map<String, List<String>> map) {
         for (Project p : projects) {
+            if (p.hasErrors()) continue;
+
             if (!map.containsKey(p.getNameLowerCase())) {
-                map.put(p.getNameLowerCase(), new ArrayList<>());
+                map.put(p.getNameLowerCase(), new ObjectList<>());
+            }
+
+            if (p.getLaunchers().size() > 0) {
+                for (String s : p.getLaunchers()) {
+                    map.get(p.getNameLowerCase()).add(s);
+                }
             }
         }
     }
 
-    private void buildIncludeString(StringBuilder builder, Map<String, ArrayList<String>> map) {
+    private void buildIncludeString(StringBuilder builder, Map<String, List<String>> map) {
         AtomicInteger idx = new AtomicInteger();
         map.forEach((k, v) -> {
             builder.append(includeString);
@@ -118,7 +123,7 @@ public class ChangeGradleSettingsCommand implements Command<String, Object> {
         });
     }
 
-    private void buildProjectsString(StringBuilder builder, Map<String, ArrayList<String>> map) {
+    private void buildProjectsString(StringBuilder builder, Map<String, List<String>> map) {
         AtomicInteger idx = new AtomicInteger();
         map.forEach((k, v) -> {
             builder.append("project(':");
@@ -152,18 +157,18 @@ public class ChangeGradleSettingsCommand implements Command<String, Object> {
     @Override
     public String execute(Object data) throws Exception {
         if (!(data instanceof byte[])) throw new RuntimeException("Invalid Gradle settings data");
-        str = new String((byte[]) data, StandardCharsets.UTF_8);
+        String str = new String((byte[]) data, StandardCharsets.UTF_8);
 
         String preGeneratorStuff = str.substring(0, str.indexOf(includeBeginString));
-        Map<String, ArrayList<String>> includeMap = new HashMap<>();
-        Map<String, ArrayList<String>> projectMap = new HashMap<>();
+        Map<String, List<String>> includeMap = new HashMap<>();
+        Map<String, List<String>> projectMap = new HashMap<>();
         StringBuilder builder = new StringBuilder(2000);
 
         builder.append(preGeneratorStuff);
 
-        loadIncludesSection(includeMap, str);
+        readIncludesSection(includeMap, str);
+        readProjectSection(projectMap, str);
         addProjectsToSection(includeMap);
-        loadProjectSection(projectMap, str);
         addProjectsToSection(projectMap);
 
         builder.append(includeBeginString);

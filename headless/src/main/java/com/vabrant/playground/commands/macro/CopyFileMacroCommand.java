@@ -2,9 +2,11 @@ package com.vabrant.playground.commands.macro;
 
 import com.vabrant.playground.commands.Command;
 import com.vabrant.playground.commands.ReadAsBytesCommand;
+import com.vabrant.playground.commands.ReplaceCommand;
 import com.vabrant.playground.commands.WriteToFileCommand;
 
 import java.io.File;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class CopyFileMacroCommand implements Command<File, Object> {
@@ -14,6 +16,11 @@ public class CopyFileMacroCommand implements Command<File, Object> {
 
     public CopyFileMacroCommand(File srcFile, File destFile) {
         macroCommand = new MacroCommand<>(new ReadAsBytesCommand(srcFile), new WriteToFileCommand(destFile));
+    }
+
+    public CopyFileMacroCommand(boolean isResource, String srcFileStr, File destFile, Map<String, String> replaceMap) {
+        macroCommand = new MacroCommand<>(new ReadAsBytesCommand(isResource, srcFileStr),
+                new ReplaceCommand(replaceMap), new WriteToFileCommand(destFile));
     }
 
     /**

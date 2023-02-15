@@ -34,6 +34,26 @@ templates.templatetest.source."" = ["main_java.pg", "main_kt.pg"]
 
 #Libgdx-template
 templates.libgdx.root."" = []
-templates.libgdx.core."core" = ["libgdx.txt"]
+templates.libgdx.core.core = ["libgdx.txt"]
+templates.libgdx.core."core/bob/test" = ["bob.txt"]
 templates.libgdx.source."" = ["ApplicationListener.java"]
+
+[root."lwjgl3Launcher"]
+extention = "java"
+isTemplate = true
+
+[hello.world]
+name = "Hello"
+root = "root"
+source = "source"
+isCool = false
+num = 15
+
+[hello.world.billy]
+name = "billy"
+
+[hello.bob]
+name = "Bob"
+root = "source"
+source = "root"
 

@@ -2,40 +2,70 @@ package com.vabrant.playground;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 
 public class Project {
 
+    private boolean errors;
     private boolean isNewProject;
     private ArrayList<String> launchers;
-    private ArrayList<String> newLaunchers;
     private String name;
     private String nameLowerCase;
+    private String passedInTemplateName;
     private File rootDirectory;
     private File sourceDirectory;
     private File launchersDirectory;
+    private Map<String, String> replaceMap;
 
     public Project(String name, File projectsDirectory) {
         this.name = name;
         nameLowerCase = name.toLowerCase();
         rootDirectory = new File(projectsDirectory, nameLowerCase);
-        newLaunchers = new ArrayList<>();
-    }
-
-    public void createSourceAndLaunchersDirectory(Playground playground) {
-        sourceDirectory = new File(rootDirectory, "src/main/java/" + playground.getGroup() + '/' + nameLowerCase);
+        launchers = new ArrayList<>();
         launchersDirectory = new File(rootDirectory, "launchers");
     }
 
-    public ArrayList<String> getNewLaunchers() {
-        return newLaunchers;
+    public void setReplaceMap(Map<String, String> replaceMap) {
+        this.replaceMap = replaceMap;
+    }
+
+    public Map<String, String> getReplaceMap() {
+        return replaceMap;
+    }
+
+    public void createSourceDirectory(Playground playground) {
+        sourceDirectory = new File(rootDirectory, "src/main/java/" + replaceMap.get(Headless.GROUP_TAG).replace('.', '/'));
+    }
+
+    public void setPassedInTemplate(String name) {
+        passedInTemplateName = name;
+    }
+
+    public String getPassedInTemplate() {
+        return passedInTemplateName;
+    }
+
+    public void addLauncher(String launcher) {
+        launchers.add(launcher);
+    }
+
+    public ArrayList<String> getLaunchers() {
+        return launchers;
+    }
+
+    public void errors() {
+        this.errors = true;
+    }
+
+    public boolean hasErrors() {
+        return errors;
     }
 
     public boolean isNewProject() {
         return isNewProject;
     }
 
-    public void setNewProject() {
+    public void newProject() {
         isNewProject = true;
     }
 

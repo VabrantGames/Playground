@@ -17,19 +17,6 @@ public class WriteToFileCommand implements Command<File, Object> {
     }
 
     @Override
-    public void revert() {
-        if (file != null && file.isFile()) {
-            System.out.println("Delete File: " + file.getPath());
-//            file.delete();
-            try {
-                Files.delete(file.toPath());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    @Override
     public File execute(Object data) throws Exception {
         if (data instanceof String) {
             bytes = ((String) data).getBytes(StandardCharsets.UTF_8);

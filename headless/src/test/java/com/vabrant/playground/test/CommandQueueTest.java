@@ -23,6 +23,12 @@ class CommandQueueTest {
     void NestedTest() {
         CommandQueue queue = new CommandQueue();
         queue.add(new PrintNumberCommand(0));
+        queue.setErrorCallback(new Callback() {
+            @Override
+            public void onCallback() {
+                System.out.println("Hello World");
+            }
+        });
 
         CommandQueue nested1 = new CommandQueue();
         nested1.add(new PrintNumberCommand(1));
@@ -74,7 +80,7 @@ class CommandQueueTest {
             this.num = num;
         }
 
-        @Override
+//        @Override
         public void revert() {
             System.out.println("Revert " + num);
         }

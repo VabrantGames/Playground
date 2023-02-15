@@ -54,10 +54,6 @@ public class CommandQueue implements Command<Object, Object> {
         } catch (Exception e) {
             System.err.println(e.getMessage());
             if (errorCallback != null) errorCallback.onCallback();
-
-            for (int i = idx; i >= 0; i--) {
-                commands.get(i).revert();
-            }
         }
         return null;
     }
