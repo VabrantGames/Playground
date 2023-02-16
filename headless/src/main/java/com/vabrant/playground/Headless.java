@@ -51,7 +51,7 @@ public class Headless implements Callable<Integer> {
     @CommandLine.Option(
             names = "-i",
             description = "Initialize Playground",
-    paramLabel = "Hello Playground")
+            paramLabel = "Hello Playground")
     private boolean initializePlayground;
 
     @CommandLine.Option(
@@ -91,8 +91,8 @@ public class Headless implements Callable<Integer> {
             handleProjects();
 
             commandQueue.add(new MacroCommand()
-                .add(new WriteTomlSettingsCommand(playground, projects, settings))
-                .add(new WriteToFileCommand(new File(playground.getPlaygroundDirectory(), "settings.toml"))));
+                    .add(new WriteTomlSettingsCommand(playground, projects, settings))
+                    .add(new WriteToFileCommand(new File(playground.getPlaygroundDirectory(), "settings.toml"))));
             commandQueue.execute(null);
         } catch (Exception e) {
             e.printStackTrace();
@@ -261,25 +261,31 @@ public class Headless implements Callable<Integer> {
     }
 
     private void handleTemplates(Project project) throws Exception {
-        if (project.getPassedInTemplate() == null) return;
+        String template = project.getPassedInTemplate();
 
         TomlTable templateTable = null;
 
-        for (String s : settings.getTemplateNames()) {
-            if (s.equalsIgnoreCase(project.getPassedInTemplate())) {
-                templateTable = settings.getTemplatesTable().getTable(s);
+        //If no template is specified the default is used
+        if (template == null) {
+            template = "libGDX";
+            templateTable = settings.getTemplatesTable().getTable(template);
+        } else {
+            for (String s : settings.getTemplateNames()) {
+                if (s.equalsIgnoreCase(template)) {
+                    templateTable = settings.getTemplatesTable().getTable(s);
+                }
             }
         }
 
         if (templateTable == null) {
-            throw new RuntimeException("Template '" + project.getPassedInTemplate() + "' not found. Available Templates:" + prettyPrintSet(false, settings.getTemplateNames()));
+            throw new RuntimeException("Template '" + template + "' not found. Available Templates:" + prettyPrintSet(false, settings.getTemplateNames()));
         }
 
         boolean isResource = Boolean.TRUE.equals(templateTable.getBoolean("isResource"));
         String baseFilePath = null;
 
         if (isResource) {
-            baseFilePath = "/templates/" + project.getPassedInTemplate();
+            baseFilePath = "/templates/" + template.toLowerCase();
         } else {
             //For external templates created by user
         }
