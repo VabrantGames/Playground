@@ -2,10 +2,10 @@ package com.vabrant.playground;
 
 public class ProjectErrorCallback implements Callback {
 
-    private final int logLevel;
+    private final PlaygroundUtils.LogLevel logLevel;
     private Project project;
 
-    public ProjectErrorCallback(int logLevel, Project project) {
+    public ProjectErrorCallback(PlaygroundUtils.LogLevel logLevel, Project project) {
         this.logLevel = logLevel;
         this.project = project;
     }
@@ -14,6 +14,6 @@ public class ProjectErrorCallback implements Callback {
     public void onCallback(Exception e) {
         project.errors();
         PlaygroundUtils.deleteDirectory(true, project.getRootDirectory());
-        PlaygroundUtils.log(logLevel, PlaygroundUtils.LOGGER_ERROR, "Project", "(" + project.getName() + ") Failed to build.");
+        PlaygroundUtils.log(logLevel, PlaygroundUtils.LogLevel.ERROR, "Project", "(" + project.getName() + ") Failed to build.");
     }
 }

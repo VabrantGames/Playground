@@ -73,7 +73,7 @@ public class Headless implements Callable<Integer> {
 //            defaultValue = "INFO")
 //    private String logLevelString;
 
-    private int logLevel;
+    private LogLevel logLevel;
 
     @Override
     public Integer call() throws Exception {
@@ -81,9 +81,9 @@ public class Headless implements Callable<Integer> {
 
         playgroundReplaceMap = new ObjectObjectMap<>();
 
-        logLevel = LOGGER_DEBUG;
+        logLevel = LogLevel.DEBUG;
 
-        log(logLevel, LOGGER_INFO, "Playground", "VabrantPlayground v0.1.0");
+        log(logLevel, LogLevel.INFO, null, "\n#---------- VabrantPlayground v0.1.0 ----------#");
 
         try {
             rootDirectory = new File(inputDirectory);
@@ -111,8 +111,8 @@ public class Headless implements Callable<Integer> {
 
         if (isInitialized) {
             if (settingsFile.exists()) {
-                log(logLevel, LOGGER_DEBUG, "Playground", "Loading Settings");
                 settings.load(settingsFile);
+                log(logLevel, LogLevel.DEBUG, "Playground", "Settings loaded");
                 playground.setup(settings);
                 return;
             } else {
@@ -124,7 +124,7 @@ public class Headless implements Callable<Integer> {
             } else if (playgroundName == null) {
                 throw new RuntimeException("No name specified. Usage: -n <name>");
             } else {
-                log(logLevel, LOGGER_INFO, "Playground", "Initializing New Playground");
+                log(logLevel, LogLevel.DEBUG, "Playground", "New");
                 settings.loadDefaults();
                 playground.setup(playgroundName);
                 playground.newPlayground();
@@ -152,7 +152,6 @@ public class Headless implements Callable<Integer> {
         commandQueue.add(new CopyFileMacroCommand(true, "/setup/playground/buildGradle", new File(playground.getPlaygroundDirectory(), "build.gradle"), playgroundReplaceMap));
         commandQueue.add(new CopyFileMacroCommand(true, "/setup/playground/settings.gradle", new File(playground.getPlaygroundDirectory(), "settings.gradle"), playgroundReplaceMap));
         commandQueue.add(new WriteToFileCommand(new File(playground.getProjectsDirectory(), ".gitkeep")));
-
     }
 
     private void handleProjects() throws Exception {
@@ -194,7 +193,7 @@ public class Headless implements Callable<Integer> {
                 builder.append('(');
                 builder.append(project.getName());
                 builder.append(") Duplicate project passed in");
-                log(logLevel, LOGGER_ERROR, "Project", builder.toString());
+                log(logLevel, LogLevel.ERROR, "Project", builder.toString());
                 project.hasErrors();
                 return project;
             }
@@ -208,7 +207,7 @@ public class Headless implements Callable<Integer> {
                 builder.append('(');
                 builder.append(project.getName());
                 builder.append(") Invalid playground project format. Launchers folder missing");
-                log(logLevel, LOGGER_ERROR, "Project", builder.toString());
+                log(logLevel, LogLevel.ERROR, "Project", builder.toString());
                 project.errors();
                 return project;
             }
@@ -240,7 +239,7 @@ public class Headless implements Callable<Integer> {
             builder.append('(');
             builder.append(project.getName());
             builder.append(") New");
-            log(logLevel, LOGGER_INFO, "Project", builder.toString());
+            log(logLevel, LogLevel.INFO, "Project", builder.toString());
 
             commandQueue
                     .add(new CreateDirectoryCommand(project.getRootDirectory()))
@@ -253,7 +252,7 @@ public class Headless implements Callable<Integer> {
             builder.append('(');
             builder.append(project.getName());
             builder.append(") Existing");
-            log(logLevel, LOGGER_INFO, "Project", builder.toString());
+            log(logLevel, LogLevel.INFO, "Project", builder.toString());
         }
 
         return project;
@@ -318,7 +317,7 @@ public class Headless implements Callable<Integer> {
                         .append(") Launcher '")
                         .append(passedInLauncher)
                         .append("' not found.");
-                log(logLevel, LOGGER_ERROR, "Project", builder.toString());
+                log(logLevel, LogLevel.ERROR, "Project", builder.toString());
                 continue;
             }
 
@@ -334,7 +333,7 @@ public class Headless implements Callable<Integer> {
                         .append(") Directory '")
                         .append(launcherNameLowerCase)
                         .append("' already exists.");
-                log(logLevel, LOGGER_ERROR, "Project", builder.toString());
+                log(logLevel, LogLevel.ERROR, "Project", builder.toString());
                 continue;
             }
 
@@ -361,7 +360,7 @@ public class Headless implements Callable<Integer> {
                             .append("' - Cause: ")
                             .append(e.getMessage());
 
-                    log(logLevel, LOGGER_ERROR, "Launcher", builder.toString());
+                    log(logLevel, LogLevel.ERROR, "Launcher", builder.toString());
                 }
             });
 

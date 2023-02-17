@@ -10,11 +10,27 @@ import java.util.function.Consumer;
 
 public class PlaygroundUtils {
 
-    public static final int LOGGER_QUIET = 0;
-    public static final int LOGGER_ERROR = 1;
-    public static final int LOGGER_INFO = 2;
-    public static final int LOGGER_DEBUG = 3;
+//    public static final int LOGGER_QUIET = 0;
+//    public static final int LOGGER_ERROR = 1;
+//    public static final int LOGGER_INFO = 2;
+//    public static final int LOGGER_DEBUG = 3;
 
+    public enum LogLevel {
+        QUIET(0),
+        ERROR(1),
+        INFO(2),
+        DEBUG(3);
+
+        final int level;
+
+        LogLevel(int level) {
+            this.level = level;
+        }
+
+        public int getLevel() {
+            return level;
+        }
+    }
 
     public static final StringBuilder LOGGER_BUILDER = new StringBuilder(300);
 
@@ -152,13 +168,30 @@ public class PlaygroundUtils {
         return directory.list().length == 0;
     }
 
-    public static void log(int level, int messageLevel, String header, String message) {
-        if (messageLevel > level) return;
+    public static void log(LogLevel globalLevel, LogLevel messageLevel, String header, String message) {
+        if (messageLevel.getLevel() > globalLevel.getLevel()) return;
 
-        if (messageLevel == LOGGER_ERROR) {
-            System.err.println(header + " : " + message);
+        StringBuilder builder = new StringBuilder(100);
+
+        if (messageLevel.equals(LogLevel.ERROR)) {
+            builder.append('[');
+            builder.append(messageLevel.name());
+            builder.append("] ");
+            builder.append(header);
+            builder.append(" : ");
+            builder.append(message);
+            System.err.println(builder.toString());
         } else {
-            System.out.println(header + " : " + message);
+            if (header != null) {
+                builder.append('[');
+                builder.append(globalLevel.name());
+                builder.append("] ");
+                builder.append(header);
+                builder.append(" : ");
+
+            }
+            builder.append(message);
+            System.out.println(builder.toString());
         }
     }
 }
