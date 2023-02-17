@@ -11,7 +11,7 @@ public class ProjectErrorCallback implements Callback {
     }
 
     @Override
-    public void onCallback() {
+    public void onCallback(Exception e) {
         project.errors();
         PlaygroundUtils.deleteDirectory(true, project.getRootDirectory());
         PlaygroundUtils.log(logLevel, PlaygroundUtils.LOGGER_ERROR, "Project", "(" + project.getName() + ") Failed to build.");

@@ -25,7 +25,7 @@ class CommandQueueTest {
         queue.add(new PrintNumberCommand(0));
         queue.setErrorCallback(new Callback() {
             @Override
-            public void onCallback() {
+            public void onCallback(Exception e) {
                 System.out.println("Hello World");
             }
         });
@@ -59,7 +59,7 @@ class CommandQueueTest {
     static class ErrorCallback implements Callback {
 
         @Override
-        public void onCallback() {
+        public void onCallback(Exception e) {
            System.err.println("Error Callback") ;
         }
     }

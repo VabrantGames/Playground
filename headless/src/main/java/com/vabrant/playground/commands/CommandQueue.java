@@ -52,8 +52,8 @@ public class CommandQueue implements Command<Object, Object> {
                 c.execute(null);
             }
         } catch (Exception e) {
-            System.err.println(e.getMessage());
-            if (errorCallback != null) errorCallback.onCallback();
+//            System.err.println(e.getMessage());
+            if (errorCallback != null) errorCallback.onCallback(e);
         }
         return null;
     }

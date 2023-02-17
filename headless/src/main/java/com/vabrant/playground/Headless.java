@@ -138,7 +138,7 @@ public class Headless implements Callable<Integer> {
         //If the playground is new, delete any files create in the event of an error.
         commandQueue.setErrorCallback(new Callback() {
             @Override
-            public void onCallback() {
+            public void onCallback(Exception e) {
                 deleteDirectory(false, playground.getPlaygroundDirectory());
             }
         });
@@ -163,14 +163,13 @@ public class Headless implements Callable<Integer> {
             CommandQueue queue = new CommandQueue();
             commandQueue = queue;
             Project p = setupProject(d);
-
             if (p.hasErrors()) continue;
-
             handleTemplates(p);
-            handleLaunchers(d, p);
-            projects.add(p);
             queue.setErrorCallback(new ProjectErrorCallback(logLevel, p));
             mainCommandQueue.add(commandQueue);
+
+            handleLaunchers(d, p);
+            projects.add(p);
         }
 
         commandQueue = mainCommandQueue;
@@ -343,6 +342,29 @@ public class Headless implements Callable<Integer> {
             File sourceDirectory = new File(rootDirectory, "src/main/java/" + group);
             boolean isResource = Boolean.TRUE.equals(launcherTable.getBoolean("isResource"));
 
+            //Create Launcher CommandQueue
+            commandQueue = new CommandQueue();
+
+            //In the event of an error delete the launcher directory
+            String finalLauncherName = launcherName;
+            commandQueue.setErrorCallback(new Callback() {
+                @Override
+                public void onCallback(Exception e) {
+                    deleteDirectory(true, rootDirectory);
+                    StringBuilder builder = LOGGER_BUILDER;
+                    builder.setLength(0);
+                    builder
+                            .append('(')
+                            .append(project.getName())
+                            .append(") Error creating launcher '")
+                            .append(finalLauncherName)
+                            .append("' - Cause: ")
+                            .append(e.getMessage());
+
+                    log(logLevel, LOGGER_ERROR, "Launcher", builder.toString());
+                }
+            });
+
             commandQueue.add(new CreateDirectoryCommand(rootDirectory));
             commandQueue.add(new CreateDirectoryCommand(sourceDirectory));
 
@@ -358,6 +380,8 @@ public class Headless implements Callable<Integer> {
             queueDirectoryToCopy(isResource, sourceDirectory, launcherTable.getTable("source"), baseFilePath + "/source/", project.getReplaceMap(), new String[]{"Launcher.java", project.getName() + launcherName + "Launcher.java"});
 
             project.addLauncher(launcherName);
+
+            mainCommandQueue.add(commandQueue);
         }
     }
 

@@ -1,5 +1,5 @@
 package com.vabrant.playground;
 
 public interface Callback {
-    void onCallback();
+    void onCallback(Exception e);
 }
