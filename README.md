@@ -30,7 +30,7 @@ includeBuild 'playground'
 ### Add to build.gradle of core project
 
 ```java 
-apply plugin: 'maven-publich'
+apply plugin: 'maven-publish'
 
 group = "com.playground.integrated"
 
