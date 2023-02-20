@@ -8,6 +8,9 @@ sourceCompatibility = 1.8
 eclipse.project.name = '${PLAYGROUND_NAME}Playground-${PROJECT_NAME}'
 group += '.${PROJECT_NAME_LOWERCASE}'
 
+ext.useGlobalAssets = ${USE_GLOBAL_ASSETS}
+
 dependencies {
     api "com.badlogicgames.gdx:gdx:$gdxVersion"
+    ${INTEGRATED_DEPENDENCY}
 }

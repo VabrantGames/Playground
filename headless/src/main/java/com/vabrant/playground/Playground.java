@@ -6,16 +6,21 @@ import java.io.File;
 
 public class Playground {
 
+    private boolean isStandalone;
+
     private boolean isNewPlayground;
     private String name;
     private String nameLowerCase;
     private String group;
     private File playgroundDirectory;
     private File projectsDirectory;
+    private File rootDirectory;
+    private File tomlSettingsFile;
+    private File settingsGradleFile;
 
-    Playground(File rootDirectory) {
-        playgroundDirectory = new File(rootDirectory, "playground");
-        projectsDirectory = new File(playgroundDirectory, "projects");
+    Playground(File rootDirectory, File playgroundDirectory) {
+        this.rootDirectory = rootDirectory;
+        this.playgroundDirectory = playgroundDirectory; projectsDirectory = new File(playgroundDirectory, "projects");
     }
 
     public void setup(String name) {
@@ -32,6 +37,14 @@ public class Playground {
 
         nameLowerCase = name.toLowerCase();
         group = "com.playground." + nameLowerCase;
+    }
+
+    public void setStandalone() {
+        isStandalone = true;
+    }
+
+    public boolean isStandalone() {
+        return isStandalone;
     }
 
     public void newPlayground() {
@@ -52,6 +65,10 @@ public class Playground {
 
     public String getGroup() {
         return group;
+    }
+
+    public File getRootDirectory() {
+        return rootDirectory;
     }
 
     public File getPlaygroundDirectory() {

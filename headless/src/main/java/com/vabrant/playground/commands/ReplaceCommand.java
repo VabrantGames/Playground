@@ -22,6 +22,8 @@ public class ReplaceCommand implements Command<String, Object> {
             throw new RuntimeException("Input not supported");
         }
 
+        if (values == null) return str;
+
         for (Map.Entry<String, String> s : values.entrySet()) {
             str = str.replace(s.getKey(), s.getValue());
         }

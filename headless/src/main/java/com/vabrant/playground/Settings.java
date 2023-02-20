@@ -24,6 +24,12 @@ public class Settings {
     private Set<String> launcherNames;
     private List<String> projectNames;
 
+    private File settingsFile;
+
+    public boolean isStandalone() {
+        return result.getBoolean("isStandalone");
+    }
+
     public boolean hasProjectName(String name) {
         TomlTable t = getProjectsTable();
         return t != null && t.contains(name);

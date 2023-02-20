@@ -1,6 +1,7 @@
 package com.vabrant.playground.commands;
 
 import com.github.tommyettinger.ds.ObjectList;
+import com.vabrant.playground.Playground;
 import com.vabrant.playground.Project;
 
 import java.nio.charset.StandardCharsets;
@@ -17,8 +18,10 @@ public class ChangeGradleSettingsCommand implements Command<String, Object> {
     private final String projectBeginString = "//Project-Begin";
 
     private final List<Project> projects;
+    private Playground playground;
 
-    public ChangeGradleSettingsCommand(List<Project> projects) {
+    public ChangeGradleSettingsCommand(Playground playground, List<Project> projects) {
+        this.playground = playground;
         this.projects = projects;
     }
 
@@ -93,7 +96,7 @@ public class ChangeGradleSettingsCommand implements Command<String, Object> {
 
             if (p.getLaunchers().size() > 0) {
                 for (String s : p.getLaunchers()) {
-                    map.get(p.getNameLowerCase()).add(s);
+                    map.get(p.getNameLowerCase()).add(s.toLowerCase());
                 }
             }
         }
@@ -128,7 +131,9 @@ public class ChangeGradleSettingsCommand implements Command<String, Object> {
         map.forEach((k, v) -> {
             builder.append("project(':");
             builder.append(k);
-            builder.append("').projectDir = new File('projects/");
+            builder.append("').projectDir = new File('");
+            if (playground.isStandalone()) builder.append("playground/");
+            builder.append("projects/");
             builder.append(k);
             builder.append("')");
 
@@ -139,7 +144,9 @@ public class ChangeGradleSettingsCommand implements Command<String, Object> {
                     builder.append(k);
                     builder.append('-');
                     builder.append(s);
-                    builder.append("').projectDir = new File('projects/");
+                    builder.append("').projectDir = new File('");
+                    if (playground.isStandalone()) builder.append("playground/");
+                    builder.append("projects/");
                     builder.append(k);
                     builder.append("/launchers/");
                     builder.append(s);

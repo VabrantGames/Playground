@@ -1,4 +1,4 @@
-rootProject.name= 'playground'
+rootProject.name= '${ROOT_PROJECT_NAME}'
 
 //This section should not be manually edited.
 //#---------- GENERATED BEGIN ----------#

@@ -26,6 +26,7 @@ allprojects {
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
         maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
         maven { url 'https://jitpack.io' }
+        maven { url rootProject.file('publications') }
     }
 }
 
@@ -35,4 +36,4 @@ tasks.eclipse.doLast {
     delete ".settings/"
 }
 
-eclipse.project.name = '${PLAYGROUND_NAME}Playground' + '-parent'
+eclipse.project.name = '${PLAYGROUND_NAME}' + '-parent'

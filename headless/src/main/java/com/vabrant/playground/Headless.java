@@ -36,6 +36,10 @@ public class Headless implements Callable<Integer> {
     public static final String PROJECT_NAME_TAG = "${PROJECT_NAME}";
     public static final String PROJECT_NAME_LOWERCASE_TAG = "${PROJECT_NAME_LOWERCASE}";
     public static final String GROUP_TAG = "${GROUP}";
+    public static final String INTEGRATED_DEPENDENCY_TAG = "${INTEGRATED_DEPENDENCY}";
+    public static final String USE_GLOBAL_ASSETS_TAG = "${USE_GLOBAL_ASSETS}";
+    public static final String GLOBAL_ASSETS_PATH_TAG = "${GLOBAL_ASSETS_PATH}";
+    public static final String ROOT_PROJECT_NAME_TAG = "${ROOT_PROJECT_NAME}";
 
     private Map<String, String> playgroundReplaceMap;
 
@@ -52,12 +56,18 @@ public class Headless implements Callable<Integer> {
             names = "-i",
             description = "Initialize Playground",
             paramLabel = "Hello Playground")
-    private boolean initializePlayground;
+    private String initializePlayground;
 
-    @CommandLine.Option(
-            names = "-n",
-            description = "Name of Playground")
-    private String playgroundName;
+//    @CommandLine.Option(
+//            names = "-n",
+//            description = "Name of Playground")
+//    private String playgroundName;
+
+    @CommandLine.Option(names = "--standalone")
+    boolean isStandalone;
+
+    @CommandLine.Option(names = "-f")
+    boolean force;
 
     @CommandLine.ArgGroup(exclusive = false, multiplicity = "0..*")
     ProjectCommandData[] projectsCommandData;
@@ -67,17 +77,11 @@ public class Headless implements Callable<Integer> {
     private final CommandQueue mainCommandQueue = new CommandQueue();
     private CommandQueue commandQueue = mainCommandQueue;
 
-//    @CommandLine.Option(
-//            names = "--log",
-//            description = "Level of the logger",
-//            defaultValue = "INFO")
-//    private String logLevelString;
-
     private LogLevel logLevel;
 
     @Override
     public Integer call() throws Exception {
-        if (!new File(inputDirectory).isDirectory()) throw new RuntimeException("No such directory");
+        if (!new File(inputDirectory).isDirectory()) throw new RuntimeException("No such input directory");
 
         playgroundReplaceMap = new ObjectObjectMap<>();
 
@@ -92,7 +96,7 @@ public class Headless implements Callable<Integer> {
 
             commandQueue.add(new MacroCommand()
                     .add(new WriteTomlSettingsCommand(playground, projects, settings))
-                    .add(new WriteToFileCommand(new File(playground.getPlaygroundDirectory(), "settings.toml"))));
+                    .add(new WriteToFileCommand(new File(playground.getRootDirectory(), "settings.toml"))));
             commandQueue.execute(null);
         } catch (Exception e) {
             e.printStackTrace();
@@ -102,56 +106,127 @@ public class Headless implements Callable<Integer> {
     }
 
     private void setupPlayground(String path) throws Exception {
-        playground = new Playground(rootDirectory);
+//        playground = new Playground(rootDirectory);
+        playground = null;
         settings = new Settings();
 
-        //TODO For standalone projects the root directory should be checked
-        boolean isInitialized = playground.getPlaygroundDirectory().isDirectory() && !isDirectoryEmpty(playground.getPlaygroundDirectory());
-        File settingsFile = new File(playground.getPlaygroundDirectory(), "settings.toml");
+        File playgroundDirectory = new File(rootDirectory, "playground");
 
-        if (isInitialized) {
-            if (settingsFile.exists()) {
-                settings.load(settingsFile);
-                log(logLevel, LogLevel.DEBUG, "Playground", "Settings loaded");
-                playground.setup(settings);
-                return;
+        if (initializePlayground != null) {
+            if (initializePlayground.isEmpty()) throw new RuntimeException("Invalid playground name. Usage: -i <name>");
+
+            if (isStandalone) {
+                if (!isDirectoryEmpty(rootDirectory) && !force)
+                    throw new RuntimeException("Standalone playgrounds must be created in an empty directory");
+                playground = new Playground(rootDirectory, playgroundDirectory);
+                playground.setStandalone();
             } else {
-                throw new RuntimeException("Settings.toml not found in root directory.");
+                playground = new Playground(playgroundDirectory, playgroundDirectory);
+                if (playground.getPlaygroundDirectory().exists() && !isDirectoryEmpty(playground.getPlaygroundDirectory()))
+                    throw new RuntimeException();
             }
+
+            log(logLevel, LogLevel.DEBUG, "Playground", "New");
+            settings.loadDefaults();
+            playground.setup(initializePlayground);
+            playground.newPlayground();
         } else {
-            if (!initializePlayground) {
-                throw new RuntimeException("Playground has not been initialized. Usage: -i");
-            } else if (playgroundName == null) {
-                throw new RuntimeException("No name specified. Usage: -n <name>");
+            boolean isStandalone = false;
+            File settingsFile = new File(rootDirectory, "settings.toml");
+
+            //Look for settings.toml file in root directory and playground directory
+            if (!settingsFile.exists()) {
+                settingsFile = new File(playgroundDirectory, "settings.toml");
+
+                if (!settingsFile.exists()) throw new RuntimeException("Settings.toml not found");
             } else {
-                log(logLevel, LogLevel.DEBUG, "Playground", "New");
-                settings.loadDefaults();
-                playground.setup(playgroundName);
-                playground.newPlayground();
+                isStandalone = true;
             }
+
+            if (isStandalone) {
+                playground = new Playground(rootDirectory, playgroundDirectory);
+                playground.setStandalone();
+            } else {
+                playground = new Playground(playgroundDirectory, playgroundDirectory);
+            }
+
+            settings.load(settingsFile);
+            playground.setup(settings);
+            log(logLevel, LogLevel.DEBUG, "Playground", "Settings loaded");
+            return;
         }
+
+//        boolean doesSettingsFileExist = false;
+//        File settingsFile = new File(playground.getPlaygroundDirectory(), "settings.toml");
+//
+//        if (settingsFile.exists()) {
+//            if (initializePlayground != null) {
+//                throw new RuntimeException("Playground already initialized");
+//            }
+//
+//            settings.load(settingsFile);
+//            log(logLevel, LogLevel.DEBUG, "Playground", "Settings loaded");
+//            playground.setup(settings);
+//            return;
+//        } else if (initializePlayground != null && !initializePlayground.isEmpty()) {
+//            if (isStandalone && !isDirectoryEmpty(rootDirectory) && !force) {
+//                throw new RuntimeException("Standalone playgrounds must be created in an empty directory");
+//            } else if (force && playground.getPlaygroundDirectory().isDirectory() || force && new File(rootDirectory, "gradle").isDirectory()) {
+//                throw new RuntimeException("Playground directory already exists");
+//            }
+//
+//            log(logLevel, LogLevel.DEBUG, "Playground", "New");
+//            settings.loadDefaults();
+//            playground.setup(initializePlayground);
+//            playground.newPlayground();
+//        } else {
+//            throw new RuntimeException("Playground has not been initialized. Usage: -i <name>");
+//        }
 
         playgroundReplaceMap.put(PLAYGROUND_NAME_TAG, playground.getName());
         playgroundReplaceMap.put(PLAYGROUND_NAME_LOWERCASE_TAG, playground.getNameLowerCase());
         playgroundReplaceMap.put(GROUP_TAG, playground.getGroup());
+        playgroundReplaceMap.put(ROOT_PROJECT_NAME_TAG, playground.isStandalone() ? playground.getName() : "playground");
 
         //If the playground is new, delete any files create in the event of an error.
         commandQueue.setErrorCallback(new Callback() {
             @Override
             public void onCallback(Exception e) {
-                deleteDirectory(false, playground.getPlaygroundDirectory());
+                System.err.println("Error building playground. Cause: " + e.getMessage());
+                e.printStackTrace();
+
+                if (isStandalone) {
+                    deleteDirectory(false, rootDirectory);
+                } else {
+                    deleteDirectory(false, playground.getRootDirectory());
+                }
             }
         });
 
-        if (!playground.getPlaygroundDirectory().exists()) {
-            commandQueue.add(new CreateDirectoryCommand(playground.getPlaygroundDirectory()));
+        if (!playground.getRootDirectory().exists()) {
+            commandQueue.add(new CreateDirectoryCommand(playground.getRootDirectory()));
         }
 
+        //TODO Add paths to defaults.toml and just use copy dir method?
+        if (!isStandalone)
+            commandQueue.add(new CreateDirectoryCommand(new File(playground.getRootDirectory(), "publications")));
         commandQueue.add(new CreateDirectoryCommand(playground.getProjectsDirectory()));
-        commandQueue.add(new CopyFileMacroCommand(true, "/setup/playground/gradle.properties", new File(playground.getPlaygroundDirectory(), "gradle.properties"), playgroundReplaceMap));
-        commandQueue.add(new CopyFileMacroCommand(true, "/setup/playground/buildGradle", new File(playground.getPlaygroundDirectory(), "build.gradle"), playgroundReplaceMap));
-        commandQueue.add(new CopyFileMacroCommand(true, "/setup/playground/settings.gradle", new File(playground.getPlaygroundDirectory(), "settings.gradle"), playgroundReplaceMap));
+        commandQueue.add(new CopyFileMacroCommand(true, "/setup/playground/gradle.properties", new File(playground.getRootDirectory(), "gradle.properties"), playgroundReplaceMap));
+        commandQueue.add(new CopyFileMacroCommand(true, "/setup/playground/buildGradle", new File(playground.getRootDirectory(), "build.gradle"), playgroundReplaceMap));
+        commandQueue.add(new CopyFileMacroCommand(true, "/setup/playground/settings.gradle", new File(playground.getRootDirectory(), "settings.gradle"), playgroundReplaceMap));
         commandQueue.add(new WriteToFileCommand(new File(playground.getProjectsDirectory(), ".gitkeep")));
+
+        if (isStandalone) {
+            File gradleDirectory = new File(playground.getRootDirectory(), "gradle/wrapper");
+            commandQueue.add(new CreateDirectoryCommand(gradleDirectory));
+            commandQueue.add(new CreateDirectoryCommand(new File(playground.getRootDirectory(), "assets")));
+            commandQueue.add(new CopyFileMacroCommand(true, "/setup/standalone/gradle/wrapper/gradle-wrapper.jar", new File(gradleDirectory, "gradle-wrapper.jar"), null));
+            commandQueue.add(new CopyFileMacroCommand(true, "/setup/standalone/gradle/wrapper/gradle-wrapper.properties", new File(gradleDirectory, "gradle-wrapper.properties"), null));
+            commandQueue.add(new CopyFileMacroCommand(true, "/setup/standalone/gradlew.bat", new File(rootDirectory, "gradlew.bat"), null));
+            commandQueue.add(new CopyFileMacroCommand(true, "/setup/standalone/gradlew", new File(rootDirectory, "gradlew"), null));
+            commandQueue.add(new CopyFileMacroCommand(true, "/setup/standalone/gitignore", new File(rootDirectory, "gitignore"), null));
+            commandQueue.add(new CopyFileMacroCommand(true, "/setup/standalone/gitattributes", new File(rootDirectory, "gitattributes"), null));
+        }
     }
 
     private void handleProjects() throws Exception {
@@ -229,6 +304,8 @@ public class Headless implements Callable<Integer> {
         map.put(PROJECT_NAME_TAG, project.getName());
         map.put(PROJECT_NAME_LOWERCASE_TAG, project.getNameLowerCase());
         map.put(GROUP_TAG, playground.getGroup() + '.' + project.getNameLowerCase());
+        map.put(INTEGRATED_DEPENDENCY_TAG, !playground.isStandalone() ? "api \"com.playground.integrated:core:latest.integration\"" : "");
+        map.put(USE_GLOBAL_ASSETS_TAG, "true");
         project.setReplaceMap(map);
 
         if (project.isNewProject()) {
@@ -245,6 +322,7 @@ public class Headless implements Callable<Integer> {
                     .add(new CreateDirectoryCommand(project.getRootDirectory()))
                     .add(new CreateDirectoryCommand(project.getSourceDirectory()))
                     .add(new CreateDirectoryCommand(project.getLaunchersDirectory()))
+                    .add(new CreateDirectoryCommand(new File(project.getRootDirectory(), "assets")))
                     .add(new WriteToFileCommand(new File(project.getLaunchersDirectory(), ".gitkeep")));
         } else {
             StringBuilder builder = LOGGER_BUILDER;
@@ -294,6 +372,9 @@ public class Headless implements Callable<Integer> {
 
     private void handleLaunchers(ProjectCommandData data, Project project) throws Exception {
         if (data.getLaunchers() == null) return;
+
+        Map<String, String> replaceMap = new ObjectObjectMap<>(project.getReplaceMap());
+        replaceMap.put(GLOBAL_ASSETS_PATH_TAG, playground.isStandalone() ? "assets" : "../assets");
 
         TomlTable allLaunchersTable = settings.getLaunchersTable();
 
@@ -375,8 +456,8 @@ public class Headless implements Callable<Integer> {
                 //For external launchers created by the user
             }
 
-            queueDirectoryToCopy(isResource, rootDirectory, launcherTable.getTable("root"), baseFilePath + "/root/", project.getReplaceMap(), null);
-            queueDirectoryToCopy(isResource, sourceDirectory, launcherTable.getTable("source"), baseFilePath + "/source/", project.getReplaceMap(), new String[]{"Launcher.java", project.getName() + launcherName + "Launcher.java"});
+            queueDirectoryToCopy(isResource, rootDirectory, launcherTable.getTable("root"), baseFilePath + "/root/", replaceMap, null);
+            queueDirectoryToCopy(isResource, sourceDirectory, launcherTable.getTable("source"), baseFilePath + "/source/", replaceMap, new String[]{"Launcher.java", project.getName() + launcherName + "Launcher.java"});
 
             project.addLauncher(launcherName);
 
@@ -418,10 +499,10 @@ public class Headless implements Callable<Integer> {
     }
 
     private void addProjectsToGradleSettings(List<Project> projects) throws Exception {
-        File file = new File(playground.getPlaygroundDirectory(), "settings.gradle");
+        File file = new File(playground.getRootDirectory(), "settings.gradle");
         commandQueue.add(new MacroCommand()
                 .add(new ReadAsBytesCommand(file))
-                .add(new ChangeGradleSettingsCommand(projects))
+                .add(new ChangeGradleSettingsCommand(playground, projects))
                 .add(new WriteToFileCommand(file)));
     }
 

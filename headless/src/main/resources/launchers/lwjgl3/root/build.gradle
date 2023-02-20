@@ -4,7 +4,11 @@ plugins {
 	id 'application'
 }
 
-//sourceSets.main.resources.srcDirs += [ rootProject.file('assets').path ]
+File getAssetsDir() {
+  return project(':${PROJECT_NAME_LOWERCASE}').getExtensions().getByName("ext").getAt("useGlobalAssets") ? rootProject.file('${GLOBAL_ASSETS_PATH}') : project(':${PROJECT_NAME_LOWERCASE}').file('assets')
+}
+
+sourceSets.main.resources.srcDirs += getAssetsDir();
 mainClassName = '${GROUP}.launchers.lwjgl3.${PROJECT_NAME}Lwjgl3Launcher'
 eclipse.project.name = '${PLAYGROUND_NAME}Playground-${PROJECT_NAME}-lwjgl3'
 sourceCompatibility = 1.8
@@ -18,7 +22,7 @@ dependencies {
 def os = System.properties['os.name'].toLowerCase()
 
 run {
-//	workingDir = rootProject.file('assets').path
+	workingDir = getAssetsDir();
 	setIgnoreExitValue(true)
 
 	if (os.contains('mac')) {

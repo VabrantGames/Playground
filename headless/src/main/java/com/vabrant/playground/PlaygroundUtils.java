@@ -10,11 +10,6 @@ import java.util.function.Consumer;
 
 public class PlaygroundUtils {
 
-//    public static final int LOGGER_QUIET = 0;
-//    public static final int LOGGER_ERROR = 1;
-//    public static final int LOGGER_INFO = 2;
-//    public static final int LOGGER_DEBUG = 3;
-
     public enum LogLevel {
         QUIET(0),
         ERROR(1),
@@ -165,6 +160,7 @@ public class PlaygroundUtils {
     }
 
     public static boolean isDirectoryEmpty(File directory) {
+        if (!directory.isDirectory()) return false;
         return directory.list().length == 0;
     }
 
