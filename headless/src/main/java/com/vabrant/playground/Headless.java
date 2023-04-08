@@ -304,7 +304,8 @@ public class Headless implements Callable<Integer> {
         map.put(PROJECT_NAME_TAG, project.getName());
         map.put(PROJECT_NAME_LOWERCASE_TAG, project.getNameLowerCase());
         map.put(GROUP_TAG, playground.getGroup() + '.' + project.getNameLowerCase());
-        map.put(INTEGRATED_DEPENDENCY_TAG, !playground.isStandalone() ? "api \"com.playground.integrated:core:latest.integration\"" : "");
+//        map.put(INTEGRATED_DEPENDENCY_TAG, !playground.isStandalone() ? "api \"com.playground.integrated:core:latest.integration\"" : "");
+        map.put(INTEGRATED_DEPENDENCY_TAG, !playground.isStandalone() ? "implementation \"com.core:core:latest.integration\"" : "");
         map.put(USE_GLOBAL_ASSETS_TAG, "true");
         project.setReplaceMap(map);
 

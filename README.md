@@ -16,42 +16,108 @@ of the needed commands below.
 | <nobr>`--standalone`</nobr> | A playground that will not be integrated into an existing libGDX project                              |
 
 <nobr> e.g. `java -jar playground.jar --path pathToDirectory -i PlaygroundName -p ProjectName:templateName -l LauncherName` </nobr>
-<nobr> e.g. 'java -jar playground.jar --path /users/path/etc... -i MyFirstPlayground -p Squares:libgdx -l lwjgl3' </nobr>
 
 *Note: libGDX is the default template*
 
 ## Integrating with existing libGDX projects
 
-### Add to settings.gradle of root project
-```java
+### 1.) Turn assets folder into a project
+
+Create a <b>build.gradle</b> file inside assets root directory and copy the code below
+```groovy
+group = "com.assets"
+sourceSets.main.resources.srcDirs = ["."]
+gradle.buildFinished{
+    project.buildDir.deleteDir()
+}
+```
+
+### 2.) Change group name of *build.gradle* in *core* project
+
+```groovy 
+group = "com.core"
+```
+
+### 3.) Add to settings.gradle of root project
+
+```groovy
+include assets
+includeBuild '.'
 includeBuild 'playground'
 ```
 
-### Add to build.gradle of core project
+### Updating projects
 
-```java 
-apply plugin: 'maven-publish'
+*These steps are not necessary but will remove warnings and build.gradle of the assets project*
 
-group = "com.playground.integrated"
+### <u><i>liftoff setup</i></u>
 
-publishing {
-  publications {
-    mavenJava(MavenPublication) {
-      from components.java
+#### lwjgl3
+
+*Note: Assets are pulled from the assets project*
+
+* Remove line `sourceSets.main.resources.srcDirs...`
+* Remove line `workingDir...` in the `run` closure
+* Add dependency `project(:'assets')` 
+* Add to `jar` closure 
+```groovy
+jar {
+    ...
+    
+    dependencies {
+        ...
+
+        //Add this
+        project(':assets') {
+            exclude('build.gradle')
+        }
     }
-  }
-  repositories {
-    maven {
-      url = rootProject.file('playground/publications')
-    }
-  }
 }
-
-tasks.named('build') { dependsOn 'publish' }
 ```
 
-This will publish to the core project in a local directory instead of the default `.m2`. All projects will look in this
-local directory to find the core project.
+### <u><i>gdx-setup</i></u>
 
-After building the core projects, you can run the playground projects with code from core.
+#### root build.gradle
+
+```groovy 
+project(":desktop") {
+    ...
+    
+    dependencies {
+        ...
+        implementation project(":assets")
+    }
+}
+```
+
+#### lwjgl3
+
+*Note: Assets are pulled from the assets project*
+
+* Remove line `sourceSets.main.resources.srcDirs...`
+* Remove line `project.ext.assetsDir...`
+* Remove line `workingDir` in `run` closure
+```
+task run(dependsOn: classes, type: JavaExec) {
+   ... 
+   
+   //Remove this
+   workingDir = ...
+}
+```
+* Remove line `workingDir` in `debug` closure (Follow the steps from run)
+* Add to `dist` closure 
+```groovy
+task dist(type: Jar) {
+    ...
+    
+    //Add this
+    dependencies {
+        project(':assets') {
+            exclude('build.gradle')
+        }
+    }
+}
+```
+
 
