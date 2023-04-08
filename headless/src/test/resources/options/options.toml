@@ -1,0 +1,24 @@
+[JavaVersion]
+alias = ["--javaVersion", "-jv"]
+scope = "build.gradle"
+type = "String"
+replaceString = "sourceCompatibility"
+#range = [1.6, 1.7, 8, 11, 17]
+
+[width]
+alias = ["--width", "-w"]
+scope = ".java"
+type = "float"
+default = 640
+
+[group]
+alias = ["-g"]
+type = "String"
+scope = "build.gradle"
+replaceString = "group"
+
+[value]
+alias = ["--value", "-v"]
+scope = "build.gradle"
+type = "Integer"
+replaceString = "def value"

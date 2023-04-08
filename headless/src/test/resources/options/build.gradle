@@ -1,0 +1,7 @@
+apply plugin: "java-library"
+
+group = "com.hello"
+
+sourceCompatibility = 8
+
+def value = 2
