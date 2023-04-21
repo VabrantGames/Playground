@@ -1,6 +1,7 @@
 package com.vabrant.playground.commands;
 
 import com.github.tommyettinger.ds.ObjectList;
+import com.playground.commands.Command;
 import com.vabrant.playground.Playground;
 import com.vabrant.playground.PlaygroundUtils;
 import com.vabrant.playground.Project;

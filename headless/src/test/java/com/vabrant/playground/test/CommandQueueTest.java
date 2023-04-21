@@ -1,8 +1,8 @@
 package com.vabrant.playground.test;
 
-import com.vabrant.playground.Callback;
-import com.vabrant.playground.commands.Command;
-import com.vabrant.playground.commands.CommandQueue;
+import com.playground.commands.Callback;
+import com.playground.commands.Command;
+import com.playground.commands.CommandQueue;
 import org.junit.jupiter.api.Test;
 
 class CommandQueueTest {

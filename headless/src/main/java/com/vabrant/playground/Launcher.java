@@ -1,4 +1,4 @@
-package com.vabrant.playground.commands;
+package com.vabrant.playground;
 
 public class Launcher {
 

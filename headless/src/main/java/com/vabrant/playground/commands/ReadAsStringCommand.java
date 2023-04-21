@@ -1,5 +1,8 @@
 package com.vabrant.playground.commands;
 
+import com.playground.commands.Command;
+import com.playground.commands.ReadAsBytesCommand;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;

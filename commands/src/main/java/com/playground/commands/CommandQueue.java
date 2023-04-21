@@ -1,7 +1,6 @@
-package com.vabrant.playground.commands;
+package com.playground.commands;
 
 import com.github.tommyettinger.ds.ObjectDeque;
-import com.vabrant.playground.Callback;
 
 import java.io.File;
 import java.nio.file.Path;

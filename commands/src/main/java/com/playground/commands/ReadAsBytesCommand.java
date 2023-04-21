@@ -1,12 +1,12 @@
-package com.vabrant.playground.commands;
+package com.playground.commands;
 
-import com.vabrant.playground.Headless;
-
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 
 public class ReadAsBytesCommand implements Command<byte[], Object> {
 
-    //    private boolean isResource;
     String resource;
     private File file;
 
@@ -17,7 +17,6 @@ public class ReadAsBytesCommand implements Command<byte[], Object> {
         } else {
             file = new File(str);
         }
-//        this.isResource = isResource;
     }
 
     public ReadAsBytesCommand(File file) {
@@ -32,7 +31,7 @@ public class ReadAsBytesCommand implements Command<byte[], Object> {
             if (file != null) {
                 is = new FileInputStream(file);
             } else {
-                is = Headless.class.getResourceAsStream(resource);
+                is = ReadAsBytesCommand.class.getResourceAsStream(resource);
             }
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();

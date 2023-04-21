@@ -1,9 +1,4 @@
-package com.vabrant.playground.commands.macro;
-
-import com.vabrant.playground.commands.Command;
-import com.vabrant.playground.commands.ReadAsBytesCommand;
-import com.vabrant.playground.commands.ReplaceCommand;
-import com.vabrant.playground.commands.WriteToFileCommand;
+package com.playground.commands;
 
 import java.io.File;
 import java.util.Map;

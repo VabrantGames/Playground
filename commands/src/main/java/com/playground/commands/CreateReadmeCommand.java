@@ -1,14 +1,14 @@
-package com.vabrant.playground.commands;
+package com.playground.commands;
 
 public class CreateReadmeCommand implements Command {
 
-    private WriteToStringCommand wtsc;
+//    private WriteToStringCommand wtsc;
 
     public CreateReadmeCommand(String name) {
-        wtsc = new WriteToStringCommand();
-        wtsc.append("<h1 align=\"center\">");
-        wtsc.append(name);
-        wtsc.append("</h1>");
+//        wtsc = new WriteToStringCommand();
+//        wtsc.append("<h1 align=\"center\">");
+//        wtsc.append(name);
+//        wtsc.append("</h1>");
     }
 
 //    public CreateReadmeCommand appendTextLink(String str) {
@@ -19,7 +19,7 @@ public class CreateReadmeCommand implements Command {
 
     public CreateReadmeCommand appendText(String str) {
 
-        wtsc.append(str);
+//        wtsc.append(str);
         return this;
     }
 

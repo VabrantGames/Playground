@@ -1,7 +1,6 @@
-package com.vabrant.playground.commands.macro;
+package com.playground.commands;
 
 import com.github.tommyettinger.ds.ObjectList;
-import com.vabrant.playground.commands.Command;
 
 import java.util.Arrays;
 import java.util.List;

@@ -16,6 +16,8 @@ dependencies {
     implementation "org.tomlj:tomlj:1.1.0"
     implementation "org.apache.commons:commons-lang3:3.12.0"
     implementation 'com.github.tommyettinger:jdkgdxds:1.1.2'
+    implementation project(":commands")
+
     testImplementation(platform('org.junit:junit-bom:5.8.2'))
     testImplementation('org.junit.jupiter:junit-jupiter')
     testImplementation "com.badlogicgames.gdx:gdx:$gdxVersion"

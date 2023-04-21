@@ -2,9 +2,10 @@ package com.vabrant.playground;
 
 import com.github.tommyettinger.ds.ObjectList;
 import com.github.tommyettinger.ds.ObjectObjectMap;
+import com.playground.commands.*;
 import com.vabrant.playground.commands.*;
-import com.vabrant.playground.commands.macro.CopyFileMacroCommand;
-import com.vabrant.playground.commands.macro.MacroCommand;
+import com.playground.commands.CopyFileMacroCommand;
+import com.playground.commands.MacroCommand;
 import org.tomlj.TomlArray;
 import org.tomlj.TomlTable;
 import picocli.CommandLine;

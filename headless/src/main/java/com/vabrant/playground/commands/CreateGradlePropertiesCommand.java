@@ -1,6 +1,8 @@
 package com.vabrant.playground.commands;
 
-import com.vabrant.playground.commands.macro.MacroCommand;
+import com.playground.commands.Command;
+import com.playground.commands.WriteToFileCommand;
+import com.playground.commands.MacroCommand;
 
 import java.io.File;
 

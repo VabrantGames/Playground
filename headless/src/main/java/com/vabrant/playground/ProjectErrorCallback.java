@@ -1,5 +1,7 @@
 package com.vabrant.playground;
 
+import com.playground.commands.Callback;
+
 public class ProjectErrorCallback implements Callback {
 
     private final PlaygroundUtils.LogLevel logLevel;

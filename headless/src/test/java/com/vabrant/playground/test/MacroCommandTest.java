@@ -1,7 +1,7 @@
 package com.vabrant.playground.test;
 
-import com.vabrant.playground.commands.Command;
-import com.vabrant.playground.commands.macro.MacroCommand;
+import com.playground.commands.Command;
+import com.playground.commands.MacroCommand;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

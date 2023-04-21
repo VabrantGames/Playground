@@ -1,4 +1,4 @@
-package com.vabrant.playground.commands;
+package com.playground.commands;
 
 import java.io.File;
 import java.util.function.Consumer;
