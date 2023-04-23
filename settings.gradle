@@ -1,1 +1,1 @@
-include "headless", "commands"
+include "headless", "commands", "applicationtests"

@@ -1,0 +1,83 @@
+import org.gradle.internal.os.OperatingSystem
+import groovy.transform.Field
+
+@Field projectName= 'Bob'
+def playgroundJar = file('libs/playground-setup.jar')
+
+def getProjectName() {
+    projectName
+}
+
+if (playgroundJar.exists()) {
+//    def dirsToSkipPattern = ~/^(build|\.|libs)/
+    def appDirs = ~/^(liftoff|libgdx)/
+
+    projectDir.eachDir { dir ->
+        def dirName = dir.getName()
+//        if (!dirsToSkipPattern.matcher(dirName).lookingAt()) {
+        if (appDirs.matcher(dirName).matches()) {
+            def appDir = new File(projectDir, dirName)
+            createPlaygroundAndProjectTask(appDir, playgroundJar, dirName);
+            createRunPlaygroundProjectTask(appDir, dirName)
+        }
+    }
+}
+
+void createPlaygroundAndProjectTask(File appDir, File playgroundJar, String dirName) {
+    task("${dirName}_createPlayground", type: JavaExec) {
+        group dirName
+
+        //Delete the playground dir
+        doFirst {
+            File playgroundDir = new File(appDir, 'playground');
+
+            if (playgroundDir.exists() && !playgroundDir.deleteDir()) {
+                throw new GradleException("Error delete playground directory in '${directory.name}' directory ")
+            }
+        }
+
+        main = "-jar"
+        args playgroundJar
+        ignoreExitValue = true
+
+        args([
+                '--path',
+                appDir.toString(),
+                '-i',
+                "${dirName}Playground",
+                '-p',
+                "${projectName}:libgdx",
+                '-l',
+                'lwjgl3'
+        ])
+
+        if (OperatingSystem.current() == OperatingSystem.MAC_OS) {
+            jvmArgs += "-XstartOnFirstThread"
+        }
+    }
+}
+
+void createRunPlaygroundProjectTask(File appDir, String dirName) {
+    task("${dirName}_runPlaygroundProjectLwjgl3", type: Exec) {
+        group = dirName
+
+        workingDir appDir
+        args ":playground:${projectName}-lwjgl3:run"
+
+        if (OperatingSystem.current() == OperatingSystem.WINDOWS) {
+            executable 'gradlew.bat'
+        } else {
+            executable './gradlew'
+        }
+    }
+}
+
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
+tasks.eclipse.doLast {
+    delete ".project"
+    delete ".classpath"
+    delete ".settings/"
+}
